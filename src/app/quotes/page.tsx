@@ -61,6 +61,8 @@ export default function QuotesPage() {
         quoteId,
         status: 'draft',
         dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+        template: 'english', // default template
+        includeQR: false, // default no QR
         createdAt: new Date(),
         updatedAt: new Date(),
       });

@@ -1,24 +1,40 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { collection, query, onSnapshot, updateDoc, doc } from 'firebase/firestore';
+import { collection, query, onSnapshot, updateDoc, doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useAuth } from '@/contexts/AuthContext';
-import { Invoice } from '@/types';
+import { Invoice, Tenant } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
+import EnglishInvoice from '@/components/templates/EnglishInvoice';
+import ArabicInvoice from '@/components/templates/ArabicInvoice';
 
 export default function InvoicesPage() {
   const { user, tenantId } = useAuth();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [tenant, setTenant] = useState<Tenant | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
 
   useEffect(() => {
     if (!tenantId) return;
+
+    // Fetch tenant data
+    const fetchTenant = async () => {
+      const tenantDoc = await getDoc(doc(db, 'tenants', tenantId));
+      if (tenantDoc.exists()) {
+        setTenant({
+          id: tenantDoc.id,
+          ...tenantDoc.data(),
+          createdAt: tenantDoc.data().createdAt?.toDate(),
+        } as Tenant);
+      }
+    };
+    fetchTenant();
 
     const q = query(collection(db, 'tenants', tenantId, 'invoices'));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -90,32 +106,55 @@ export default function InvoicesPage() {
                             View Details
                           </Button>
                         </DialogTrigger>
-                        <DialogContent>
+                        <DialogContent className="max-w-6xl max-h-[80vh] overflow-y-auto">
                           <DialogHeader>
-                            <DialogTitle>Invoice Details</DialogTitle>
+                            <DialogTitle>Invoice Preview</DialogTitle>
                           </DialogHeader>
-                          {selectedInvoice && (
-                            <div className="space-y-4">
-                              <div>
-                                <h3 className="font-semibold">Client: {selectedInvoice.clientName}</h3>
-                                <p>Email: {selectedInvoice.clientEmail}</p>
-                                <p>Address: {selectedInvoice.clientAddress}</p>
+                          {selectedInvoice && tenant && (
+                            <div>
+                              <div className="flex gap-4 mb-4">
+                                <Button
+                                  variant={selectedInvoice.template === 'english' ? 'default' : 'outline'}
+                                  onClick={() => {
+                                    const updatedInvoice = { ...selectedInvoice, template: 'english' as const };
+                                    setSelectedInvoice(updatedInvoice);
+                                    updateDoc(doc(db, 'tenants', tenantId!, 'invoices', selectedInvoice.id), {
+                                      template: 'english'
+                                    });
+                                  }}
+                                >
+                                  English Template
+                                </Button>
+                                <Button
+                                  variant={selectedInvoice.template === 'arabic' ? 'default' : 'outline'}
+                                  onClick={() => {
+                                    const updatedInvoice = { ...selectedInvoice, template: 'arabic' as const };
+                                    setSelectedInvoice(updatedInvoice);
+                                    updateDoc(doc(db, 'tenants', tenantId!, 'invoices', selectedInvoice.id), {
+                                      template: 'arabic'
+                                    });
+                                  }}
+                                >
+                                  Arabic Template
+                                </Button>
+                                <Button
+                                  variant={selectedInvoice.includeQR ? 'default' : 'outline'}
+                                  onClick={() => {
+                                    const updatedInvoice = { ...selectedInvoice, includeQR: !selectedInvoice.includeQR };
+                                    setSelectedInvoice(updatedInvoice);
+                                    updateDoc(doc(db, 'tenants', tenantId!, 'invoices', selectedInvoice.id), {
+                                      includeQR: !selectedInvoice.includeQR
+                                    });
+                                  }}
+                                >
+                                  {selectedInvoice.includeQR ? 'Hide' : 'Show'} ZATCA QR
+                                </Button>
                               </div>
-                              <div>
-                                <h4 className="font-semibold">Items:</h4>
-                                <ul>
-                                  {selectedInvoice.items.map((item, index) => (
-                                    <li key={index}>
-                                      {item.name} - Qty: {item.quantity} - ${item.total.toFixed(2)}
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
-                              <div>
-                                <p>Subtotal: ${selectedInvoice.subtotal.toFixed(2)}</p>
-                                <p>Tax: ${selectedInvoice.taxAmount.toFixed(2)}</p>
-                                <p>Total: ${selectedInvoice.total.toFixed(2)}</p>
-                              </div>
+                              {selectedInvoice.template === 'arabic' ? (
+                                <ArabicInvoice invoice={selectedInvoice} tenant={tenant} />
+                              ) : (
+                                <EnglishInvoice invoice={selectedInvoice} tenant={tenant} />
+                              )}
                             </div>
                           )}
                         </DialogContent>

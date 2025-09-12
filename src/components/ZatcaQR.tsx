@@ -16,23 +16,13 @@ export default function ZatcaQR({ invoice, tenant }: ZatcaQRProps) {
     if (!canvasRef.current) return;
 
     // ZATCA QR code format (simplified)
-    // TLV format: Tag, Length, Value
     const sellerName = tenant.name;
     const vatNumber = tenant.vatNumber || '';
     const invoiceDate = invoice.createdAt.toISOString().split('T')[0];
     const total = invoice.total.toFixed(2);
     const vatAmount = invoice.taxAmount.toFixed(2);
 
-    // Create TLV data (simplified for demo)
-    const tlvData = [
-      { tag: 1, value: sellerName },
-      { tag: 2, value: vatNumber },
-      { tag: 3, value: invoiceDate },
-      { tag: 4, value: total },
-      { tag: 5, value: vatAmount },
-    ];
-
-    // Convert to base64 (simplified)
+    // Create QR data (simplified for demo)
     const qrString = JSON.stringify({
       sellerName,
       vatNumber,
