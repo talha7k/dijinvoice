@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Combobox } from '@/components/ui/combobox';
 import ItemList from '@/components/ItemList';
 import ClientInfo from '@/components/ClientInfo';
+import FormSummary from '@/components/FormSummary';
 import { Invoice, QuoteItem } from '@/types';
 import {
   sampleProductsServices,
@@ -119,7 +120,10 @@ export default function InvoiceForm({ onSubmit }: InvoiceFormProps) {
       />
 
       <div>
-        <Label>Items</Label>
+        <div className="flex justify-between items-center mb-4">
+          <Label>Items</Label>
+          <Button type="button" onClick={addItem} variant="outline">Add Custom Item</Button>
+        </div>
 
         {/* Add item from catalog */}
         <div className="mb-4 space-y-2">
@@ -159,31 +163,17 @@ export default function InvoiceForm({ onSubmit }: InvoiceFormProps) {
         <Button type="button" onClick={addItem} className="mt-2">Add Custom Item</Button>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
-        <div>
-          <Label htmlFor="taxRate">Tax Rate (%)</Label>
-          <Input
-            id="taxRate"
-            type="number"
-            step="0.01"
-            value={taxRate}
-            onChange={(e) => setTaxRate(parseFloat(e.target.value))}
-          />
-        </div>
-        <div>
-          <Label htmlFor="dueDate">Due Date</Label>
-          <Input
-            id="dueDate"
-            type="date"
-            value={dueDate}
-            onChange={(e) => setDueDate(e.target.value)}
-            required
-          />
-        </div>
-        <div className="flex items-end">
-          <span className="text-lg font-bold">Total: ${total.toFixed(2)}</span>
-        </div>
-      </div>
+      <FormSummary
+        subtotal={subtotal}
+        taxRate={taxRate}
+        taxAmount={taxAmount}
+        total={total}
+        dueDate={dueDate}
+        showDueDate={true}
+        onTaxRateChange={setTaxRate}
+        onDueDateChange={setDueDate}
+        mode="invoice"
+      />
 
       <div>
         <Label htmlFor="notes">Notes</Label>

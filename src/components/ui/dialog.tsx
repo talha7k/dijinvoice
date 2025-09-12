@@ -57,7 +57,7 @@ function DialogContent({
   size?: 'default' | 'lg' | 'xl' | 'full';
 }) {
   const sizeClasses = {
-    default: "sm:max-w-lg md:max-w-2xl lg:max-w-3xl",
+    default: "sm:max-w-lg md:max-w-3xl lg:max-w-5xl",
     lg: "sm:max-w-2xl md:max-w-3xl lg:max-w-4xl",
     xl: "sm:max-w-3xl md:max-w-5xl lg:max-w-6xl xl:max-w-7xl",
     full: "sm:max-w-[95vw] md:max-w-[98vw] lg:max-w-[99vw]"

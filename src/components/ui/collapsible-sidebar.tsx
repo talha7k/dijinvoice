@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { useTheme } from "@/contexts/ThemeContext"
 import {
   BarChart3,
   Building2,
@@ -15,8 +16,10 @@ import {
   FileText,
   Home,
   Menu,
+  Moon,
   Receipt,
   Settings,
+  Sun,
   Users,
   Wallet,
 } from "lucide-react"
@@ -62,6 +65,11 @@ const navigationItems = [
     icon: Building2,
   },
   {
+    title: "Profile",
+    href: "/profile",
+    icon: Users,
+  },
+  {
     title: "Settings",
     href: "/settings",
     icon: Settings,
@@ -71,6 +79,7 @@ const navigationItems = [
 export function CollapsibleSidebar({ className }: SidebarProps) {
   const [isCollapsed, setIsCollapsed] = React.useState(false)
   const pathname = usePathname()
+  const { theme, toggleTheme } = useTheme()
 
   return (
     <>
@@ -91,18 +100,28 @@ export function CollapsibleSidebar({ className }: SidebarProps) {
                 <span className="font-semibold">DijiInvoice</span>
               </div>
             )}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsCollapsed(!isCollapsed)}
-              className="h-8 w-8 p-0"
-            >
-              {isCollapsed ? (
-                <ChevronRight className="h-4 w-4" />
-              ) : (
-                <ChevronLeft className="h-4 w-4" />
-              )}
-            </Button>
+            <div className="flex items-center space-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={toggleTheme}
+                className="h-8 w-8 p-0"
+              >
+                {theme === 'light' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsCollapsed(!isCollapsed)}
+                className="h-8 w-8 p-0"
+              >
+                {isCollapsed ? (
+                  <ChevronRight className="h-4 w-4" />
+                ) : (
+                  <ChevronLeft className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
           </div>
 
           {/* Navigation */}
@@ -145,9 +164,19 @@ export function CollapsibleSidebar({ className }: SidebarProps) {
         <SheetContent side="left" className="w-64 p-0">
           <div className="flex flex-col h-full">
             {/* Header */}
-            <div className="flex items-center space-x-2 p-4 border-b">
-              <Receipt className="h-6 w-6" />
-              <span className="font-semibold">DijiInvoice</span>
+            <div className="flex items-center justify-between p-4 border-b">
+              <div className="flex items-center space-x-2">
+                <Receipt className="h-6 w-6" />
+                <span className="font-semibold">DijiInvoice</span>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={toggleTheme}
+                className="h-8 w-8 p-0"
+              >
+                {theme === 'light' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+              </Button>
             </div>
 
             {/* Navigation */}

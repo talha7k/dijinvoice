@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Combobox } from '@/components/ui/combobox';
 import ItemList from '@/components/ItemList';
 import ClientInfo from '@/components/ClientInfo';
+import FormSummary from '@/components/FormSummary';
 import { Quote, QuoteItem } from '@/types';
 import {
   sampleProductsServices,
@@ -105,7 +106,10 @@ export default function QuoteForm({ onSubmit }: QuoteFormProps) {
       />
 
       <div>
-        <Label>Items</Label>
+        <div className="flex justify-between items-center mb-4">
+          <Label>Items</Label>
+          <Button type="button" onClick={addItem} variant="outline">Add Custom Item</Button>
+        </div>
 
         {/* Add item from catalog */}
         <div className="mb-4 space-y-2">
@@ -142,24 +146,16 @@ export default function QuoteForm({ onSubmit }: QuoteFormProps) {
           onUpdate={updateItem}
           onRemove={removeItem}
         />
-        <Button type="button" onClick={addItem} className="mt-2">Add Custom Item</Button>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <Label htmlFor="taxRate">Tax Rate (%)</Label>
-          <Input
-            id="taxRate"
-            type="number"
-            step="0.01"
-            value={taxRate}
-            onChange={(e) => setTaxRate(parseFloat(e.target.value))}
-          />
-        </div>
-        <div>
-          <Label>Total: ${total.toFixed(2)}</Label>
-        </div>
-      </div>
+      <FormSummary
+        subtotal={subtotal}
+        taxRate={taxRate}
+        taxAmount={taxAmount}
+        total={total}
+        onTaxRateChange={setTaxRate}
+        mode="quote"
+      />
 
       <div>
         <Label htmlFor="notes">Notes</Label>

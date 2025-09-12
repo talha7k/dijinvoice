@@ -73,14 +73,14 @@ function EditableTableCell({ value, type = 'text', step, min, onSave, className 
 
   return (
     <TableCell
-      className={`${className} cursor-pointer hover:bg-muted/30 transition-colors group relative`}
+      className={`${className} cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-950/20 transition-colors group relative`}
       onDoubleClick={handleDoubleClick}
     >
       <div className="flex items-center justify-between">
         <span className={!displayValue ? "text-muted-foreground italic" : ""}>
           {displayValue || "Double-click to edit"}
         </span>
-        <div className="opacity-0 group-hover:opacity-50 transition-opacity text-xs text-muted-foreground">
+        <div className="opacity-0 group-hover:opacity-70 transition-opacity text-xs text-muted-foreground">
           ✏️
         </div>
       </div>
@@ -189,12 +189,12 @@ export default function ItemList({ items, mode, onUpdate, onRemove }: ItemListPr
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Name</TableHead>
-          <TableHead>Description</TableHead>
-          <TableHead className="text-center">Qty</TableHead>
-          <TableHead className="text-right">Unit Price</TableHead>
-          <TableHead className="text-right">Total</TableHead>
-          {(mode === 'editable' || onRemove) && <TableHead className="text-center">Actions</TableHead>}
+          <TableHead className="bg-slate-50 dark:bg-slate-800/50 font-semibold">Name</TableHead>
+          <TableHead className="bg-slate-50 dark:bg-slate-800/50 font-semibold">Description</TableHead>
+          <TableHead className="bg-slate-50 dark:bg-slate-800/50 font-semibold text-center">Qty</TableHead>
+          <TableHead className="bg-slate-50 dark:bg-slate-800/50 font-semibold text-right">Unit Price</TableHead>
+          <TableHead className="bg-slate-50 dark:bg-slate-800/50 font-semibold text-right">Total</TableHead>
+          {(mode === 'editable' || onRemove) && <TableHead className="bg-slate-50 dark:bg-slate-800/50 font-semibold text-center">Actions</TableHead>}
         </TableRow>
       </TableHeader>
       <TableBody>
