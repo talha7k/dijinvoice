@@ -86,8 +86,8 @@ export default function RegisterPage() {
             <Button type="submit" className="w-full">Sign Up</Button>
           </form>
           <div className="mt-4 text-center">
-            <span className="text-sm text-gray-600">Already have an account? </span>
-            <a href="/login" className="text-sm text-blue-600 hover:underline">
+            <span className="text-sm text-muted-foreground">Already have an account? </span>
+            <a href="/login" className="text-sm text-primary hover:underline">
               Sign in
             </a>
           </div>

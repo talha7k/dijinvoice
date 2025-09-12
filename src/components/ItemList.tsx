@@ -73,7 +73,7 @@ function EditableTableCell({ value, type = 'text', step, min, onSave, className 
 
   return (
     <TableCell
-      className={`${className} cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-950/20 transition-colors group relative`}
+      className={`${className} cursor-pointer hover:bg-accent transition-colors group relative`}
       onDoubleClick={handleDoubleClick}
     >
       <div className="flex items-center justify-between">
@@ -189,12 +189,12 @@ export default function ItemList({ items, mode, onUpdate, onRemove }: ItemListPr
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead className="bg-slate-50 dark:bg-slate-800/50 font-semibold">Name</TableHead>
-          <TableHead className="bg-slate-50 dark:bg-slate-800/50 font-semibold">Description</TableHead>
-          <TableHead className="bg-slate-50 dark:bg-slate-800/50 font-semibold text-center">Qty</TableHead>
-          <TableHead className="bg-slate-50 dark:bg-slate-800/50 font-semibold text-right">Unit Price</TableHead>
-          <TableHead className="bg-slate-50 dark:bg-slate-800/50 font-semibold text-right">Total</TableHead>
-          {(mode === 'editable' || onRemove) && <TableHead className="bg-slate-50 dark:bg-slate-800/50 font-semibold text-center">Actions</TableHead>}
+          <TableHead className="bg-muted font-semibold">Name</TableHead>
+          <TableHead className="bg-muted font-semibold">Description</TableHead>
+          <TableHead className="bg-muted font-semibold text-center">Qty</TableHead>
+          <TableHead className="bg-muted font-semibold text-right">Unit Price</TableHead>
+          <TableHead className="bg-muted font-semibold text-right">Total</TableHead>
+          {(mode === 'editable' || onRemove) && <TableHead className="bg-muted font-semibold text-center">Actions</TableHead>}
         </TableRow>
       </TableHeader>
       <TableBody>

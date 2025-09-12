@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
+import { Package, Wrench } from 'lucide-react';
 
 export default function ProductsPage() {
   const { user, tenantId } = useAuth();
@@ -218,6 +219,16 @@ export default function ProductsPage() {
                       </TableCell>
                     </TableRow>
                   ))}
+                  {products.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center py-12 text-muted-foreground">
+                        <div className="flex flex-col items-center gap-2">
+                          <Package className="h-8 w-8" />
+                          <p>No products found. Click Add Product to get started.</p>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )}
                 </TableBody>
               </Table>
             </CardContent>
@@ -307,6 +318,16 @@ export default function ProductsPage() {
                       </TableCell>
                     </TableRow>
                   ))}
+                  {services.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center py-12 text-muted-foreground">
+                        <div className="flex flex-col items-center gap-2">
+                          <Wrench className="h-8 w-8" />
+                          <p>No services found. Click Add Service to get started.</p>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )}
                 </TableBody>
               </Table>
             </CardContent>

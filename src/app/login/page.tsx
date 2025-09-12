@@ -166,7 +166,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setIsResetMode(true)}
-                  className="text-sm text-blue-600 hover:underline"
+                  className="text-sm text-primary hover:underline"
                 >
                   Forgot your password?
                 </button>
@@ -181,7 +181,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setIsResetMode(false)}
-                className="text-sm text-blue-600 hover:underline"
+                className="text-sm text-primary hover:underline"
               >
                 Back to sign in
               </button>

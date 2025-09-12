@@ -67,7 +67,7 @@ function EditableTableCell({ value, type = 'text', onSave, className }: Editable
 
   return (
     <TableCell
-      className={`${className} cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-950/20 transition-colors group relative`}
+      className={`${className} cursor-pointer hover:bg-accent transition-colors group relative`}
       onDoubleClick={handleDoubleClick}
     >
       <div className="flex items-center justify-between">
@@ -138,18 +138,18 @@ export default function ClientInfo({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead colSpan={4} className="bg-slate-50 dark:bg-slate-800/50 font-semibold">Client Information</TableHead>
+              <TableHead colSpan={4} className="bg-muted font-semibold">Client Information</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             <TableRow>
-              <TableCell className="bg-slate-50 dark:bg-slate-800/30 font-medium w-1/4">Client Name</TableCell>
+              <TableCell className="bg-muted/50 font-medium w-1/4">Client Name</TableCell>
               <EditableTableCell
                 value={clientName}
                 onSave={onClientNameChange}
                 className="font-medium w-1/4"
               />
-              <TableCell className="bg-slate-50 dark:bg-slate-800/30 font-medium w-1/4">Client Email</TableCell>
+              <TableCell className="bg-muted/50 font-medium w-1/4">Client Email</TableCell>
               <EditableTableCell
                 value={clientEmail}
                 type="email"
@@ -158,14 +158,14 @@ export default function ClientInfo({
               />
             </TableRow>
             <TableRow>
-              <TableCell className="bg-slate-50 dark:bg-slate-800/30 font-medium">Client Address</TableCell>
+              <TableCell className="bg-muted/50 font-medium">Client Address</TableCell>
               <EditableTableCell
                 value={clientAddress}
                 onSave={onClientAddressChange}
               />
               {showVAT ? (
                 <>
-                  <TableCell className="bg-slate-50 dark:bg-slate-800/30 font-medium">Client VAT Number</TableCell>
+                  <TableCell className="bg-muted/50 font-medium">Client VAT Number</TableCell>
                   <EditableTableCell
                     value={clientVAT}
                     onSave={(value) => onClientVATChange?.(value)}

@@ -115,8 +115,8 @@ export default function FormSummary({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="bg-slate-50 dark:bg-slate-800/50 font-semibold">Description</TableHead>
-            <TableHead className="bg-slate-50 dark:bg-slate-800/50 font-semibold text-right">Amount</TableHead>
+            <TableHead className="bg-muted font-semibold">Description</TableHead>
+            <TableHead className="bg-muted font-semibold text-right">Amount</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

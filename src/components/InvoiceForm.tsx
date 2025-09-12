@@ -25,7 +25,7 @@ export default function InvoiceForm({ onSubmit }: InvoiceFormProps) {
   const [clientName, setClientName] = useState('');
   const [clientEmail, setClientEmail] = useState('');
   const [clientAddress, setClientAddress] = useState('');
-  const [clientVAT, setClientVAT] = useState<string | undefined>('');
+  const [clientVAT, setClientVAT] = useState<string>('');
 
   const [items, setItems] = useState<QuoteItem[]>([]);
   const [taxRate, setTaxRate] = useState(0);

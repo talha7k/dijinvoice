@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import EnglishInvoice from '@/components/templates/EnglishInvoice';
 import ArabicInvoice from '@/components/templates/ArabicInvoice';
 import InvoiceForm from '@/components/InvoiceForm';
+import { Receipt } from 'lucide-react';
 
 export default function InvoicesPage() {
   const { user, tenantId } = useAuth();
@@ -64,12 +65,24 @@ export default function InvoicesPage() {
   const handleCreateInvoice = async (invoiceData: Omit<Invoice, 'id' | 'tenantId' | 'createdAt' | 'updatedAt'>) => {
     if (!tenantId) return;
 
-    await addDoc(collection(db, 'tenants', tenantId, 'invoices'), {
+    // Clean the data to remove undefined values that Firebase doesn't accept
+    const cleanedData = {
       ...invoiceData,
+      clientVAT: invoiceData.clientVAT || null,
+      clientAddress: invoiceData.clientAddress || null,
+      notes: invoiceData.notes || null,
+      items: invoiceData.items.map(item => ({
+        ...item,
+        description: item.description || null,
+        productId: item.productId || null,
+        serviceId: item.serviceId || null,
+      })),
       tenantId,
       createdAt: new Date(),
       updatedAt: new Date(),
-    });
+    };
+
+    await addDoc(collection(db, 'tenants', tenantId, 'invoices'), cleanedData);
     setDialogOpen(false);
   };
 
@@ -206,6 +219,16 @@ export default function InvoicesPage() {
                   </TableCell>
                 </TableRow>
               ))}
+              {invoices.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center py-12 text-muted-foreground">
+                    <div className="flex flex-col items-center gap-2">
+                      <Receipt className="h-8 w-8" />
+                      <p>No invoices found. Click Create Invoice to get started.</p>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </CardContent>

@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import QuoteForm from '@/components/QuoteForm';
+import { FileText } from 'lucide-react';
 
 export default function QuotesPage() {
   const { user, tenantId } = useAuth();
@@ -39,12 +40,24 @@ export default function QuotesPage() {
   const handleCreateQuote = async (quoteData: Omit<Quote, 'id' | 'tenantId' | 'createdAt' | 'updatedAt'>) => {
     if (!tenantId) return;
 
-    await addDoc(collection(db, 'tenants', tenantId, 'quotes'), {
+    // Clean the data to remove undefined values that Firebase doesn't accept
+    const cleanedData = {
       ...quoteData,
+      clientAddress: quoteData.clientAddress || null,
+      notes: quoteData.notes || null,
+      validUntil: quoteData.validUntil || null,
+      items: quoteData.items.map(item => ({
+        ...item,
+        description: item.description || null,
+        productId: item.productId || null,
+        serviceId: item.serviceId || null,
+      })),
       tenantId,
       createdAt: new Date(),
       updatedAt: new Date(),
-    });
+    };
+
+    await addDoc(collection(db, 'tenants', tenantId, 'quotes'), cleanedData);
     setDialogOpen(false);
   };
 
@@ -56,16 +69,34 @@ export default function QuotesPage() {
 
     const quote = quotes.find(q => q.id === quoteId);
     if (quote) {
-      await addDoc(collection(db, 'tenants', tenantId, 'invoices'), {
-        ...quote,
-        quoteId,
+      // Clean the data to remove undefined values that Firebase doesn't accept
+      const cleanedQuoteData = {
+        clientName: quote.clientName,
+        clientEmail: quote.clientEmail,
+        clientAddress: quote.clientAddress || null,
+        clientVAT: null, // Quotes don't have VAT, set to null for invoices
+        items: quote.items.map(item => ({
+          ...item,
+          description: item.description || null,
+          productId: item.productId || null,
+          serviceId: item.serviceId || null,
+        })),
+        subtotal: quote.subtotal,
+        taxRate: quote.taxRate,
+        taxAmount: quote.taxAmount,
+        total: quote.total,
         status: 'draft',
         dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+        notes: quote.notes || null,
         template: 'english', // default template
         includeQR: false, // default no QR
+        quoteId,
+        tenantId,
         createdAt: new Date(),
         updatedAt: new Date(),
-      });
+      };
+
+      await addDoc(collection(db, 'tenants', tenantId, 'invoices'), cleanedQuoteData);
     }
   };
 
@@ -124,6 +155,16 @@ export default function QuotesPage() {
                   </TableCell>
                 </TableRow>
               ))}
+              {quotes.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center py-12 text-muted-foreground">
+                    <div className="flex flex-col items-center gap-2">
+                      <FileText className="h-8 w-8" />
+                      <p>No quotes found. Click Create Quote to get started.</p>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </CardContent>

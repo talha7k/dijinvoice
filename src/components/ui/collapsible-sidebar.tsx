@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { useTheme } from "@/contexts/ThemeContext"
+import { useAuth } from "@/contexts/AuthContext"
 import {
   BarChart3,
   Building2,
@@ -15,6 +16,7 @@ import {
   ChevronRight,
   FileText,
   Home,
+  LogOut,
   Menu,
   Moon,
   Receipt,
@@ -23,6 +25,7 @@ import {
   Users,
   Wallet,
 } from "lucide-react"
+import { auth } from "@/lib/firebase"
 
 interface SidebarProps {
   className?: string
@@ -65,11 +68,6 @@ const navigationItems = [
     icon: Building2,
   },
   {
-    title: "Profile",
-    href: "/profile",
-    icon: Users,
-  },
-  {
     title: "Settings",
     href: "/settings",
     icon: Settings,
@@ -80,6 +78,15 @@ export function CollapsibleSidebar({ className }: SidebarProps) {
   const [isCollapsed, setIsCollapsed] = React.useState(false)
   const pathname = usePathname()
   const { theme, toggleTheme } = useTheme()
+  const { user, tenantId } = useAuth()
+
+  const handleLogout = async () => {
+    try {
+      await auth.signOut()
+    } catch (error) {
+      console.error('Error signing out:', error)
+    }
+  }
 
   return (
     <>
