@@ -14,6 +14,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { Package, Wrench } from 'lucide-react';
+import { ActionButtons } from '@/components/ui/action-buttons';
 function ProductsContent() {
   const { user, tenantId } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
@@ -207,13 +208,10 @@ function ProductsContent() {
                       <TableCell>${product.price ? product.price.toFixed(2) : '0.00'}</TableCell>
                       <TableCell>{product.category}</TableCell>
                       <TableCell>
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => handleDeleteProduct(product.id)}
-                        >
-                          Delete
-                        </Button>
+                        <ActionButtons
+                          onDelete={() => handleDeleteProduct(product.id)}
+                          showEdit={false}
+                        />
                       </TableCell>
                     </TableRow>
                   ))}
@@ -306,13 +304,10 @@ function ProductsContent() {
                       <TableCell>${service.price ? service.price.toFixed(2) : '0.00'}</TableCell>
                       <TableCell>{service.category}</TableCell>
                       <TableCell>
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => handleDeleteService(service.id)}
-                        >
-                          Delete
-                        </Button>
+                        <ActionButtons
+                          onDelete={() => handleDeleteService(service.id)}
+                          showEdit={false}
+                        />
                       </TableCell>
                     </TableRow>
                   ))}

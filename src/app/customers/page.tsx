@@ -14,7 +14,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Plus, Users, Edit, Trash2 } from 'lucide-react';
+import { Plus, Users } from 'lucide-react';
+import { ActionButtons } from '@/components/ui/action-buttons';
 import { sampleCustomers } from '@/lib/sample-data';
 import { Customer } from '@/types';
 
@@ -135,22 +136,10 @@ export default function CustomersPage() {
                     <TableCell>{customer.address || '-'}</TableCell>
                     <TableCell>{customer.vatNumber || '-'}</TableCell>
                     <TableCell>
-                      <div className="flex space-x-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleEditCustomer(customer)}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDeleteCustomer(customer.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
+                      <ActionButtons
+                        onEdit={() => handleEditCustomer(customer)}
+                        onDelete={() => handleDeleteCustomer(customer.id)}
+                      />
                     </TableCell>
                   </TableRow>
                 ))}
