@@ -12,9 +12,7 @@ import {
   getCustomerOptions,
   getProductServiceOptions,
   getCustomerById,
-  getProductServiceById,
-  type Customer,
-  type ProductService
+  getProductServiceById
 } from '@/lib/sample-data';
 
 interface QuoteFormProps {
@@ -70,7 +68,7 @@ export default function QuoteForm({ onSubmit }: QuoteFormProps) {
     }
   };
 
-  const updateItem = (index: number, field: keyof QuoteItem, value: any) => {
+  const updateItem = (index: number, field: keyof QuoteItem, value: string | number) => {
     const newItems = [...items];
     newItems[index] = { ...newItems[index], [field]: value };
     if (field === 'quantity' || field === 'unitPrice') {

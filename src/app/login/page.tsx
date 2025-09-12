@@ -25,7 +25,7 @@ export default function LoginPage() {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       router.push('/dashboard');
-    } catch (err) {
+    } catch {
       setError('Invalid credentials');
     }
   };
@@ -37,7 +37,7 @@ export default function LoginPage() {
     try {
       await sendPasswordResetEmail(auth, email);
       setSuccess('Password reset email sent! Check your inbox.');
-    } catch (err) {
+    } catch {
       setError('Failed to send reset email. Please check your email address.');
     }
   };
@@ -64,7 +64,7 @@ export default function LoginPage() {
       }
 
       router.push('/dashboard');
-    } catch (err) {
+    } catch {
       setError('Google sign-in failed. Please try again.');
     }
   };
@@ -171,7 +171,7 @@ export default function LoginPage() {
                   Forgot your password?
                 </button>
                 <div>
-                  <span className="text-sm text-gray-600">Don't have an account? </span>
+                  <span className="text-sm text-gray-600">Don&apos;t have an account? </span>
                   <a href="/register" className="text-sm text-blue-600 hover:underline">
                     Sign up
                   </a>

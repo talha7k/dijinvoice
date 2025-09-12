@@ -61,10 +61,10 @@ export default function SettingsPage() {
       try {
         const settingsDoc = await getDoc(doc(db, 'tenants', tenantId, 'settings', 'app'));
         if (settingsDoc.exists()) {
-          setSettings({
-            ...settings,
+          setSettings(prev => ({
+            ...prev,
             ...settingsDoc.data(),
-          } as AppSettings);
+          } as AppSettings));
         }
       } catch (error) {
         console.error('Error fetching settings:', error);
@@ -95,7 +95,7 @@ export default function SettingsPage() {
     }
   };
 
-  const updateSetting = (key: keyof AppSettings, value: any) => {
+  const updateSetting = (key: keyof AppSettings, value: string | number | boolean) => {
     setSettings(prev => ({
       ...prev,
       [key]: value,

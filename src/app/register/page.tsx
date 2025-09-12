@@ -35,7 +35,7 @@ export default function RegisterPage() {
       });
 
       router.push('/dashboard');
-    } catch (err) {
+    } catch {
       setError('Registration failed');
     }
   };

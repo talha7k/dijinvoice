@@ -12,9 +12,7 @@ import {
   getCustomerOptions,
   getProductServiceOptions,
   getCustomerById,
-  getProductServiceById,
-  type Customer,
-  type ProductService
+  getProductServiceById
 } from '@/lib/sample-data';
 
 interface InvoiceFormProps {
@@ -77,7 +75,7 @@ export default function InvoiceForm({ onSubmit }: InvoiceFormProps) {
     }
   };
 
-  const updateItem = (index: number, field: keyof QuoteItem, value: any) => {
+  const updateItem = (index: number, field: keyof QuoteItem, value: string | number) => {
     const newItems = [...items];
     newItems[index] = { ...newItems[index], [field]: value };
     if (field === 'quantity' || field === 'unitPrice') {
