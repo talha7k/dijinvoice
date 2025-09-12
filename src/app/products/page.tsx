@@ -14,8 +14,9 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { Package, Wrench } from 'lucide-react';
+import { AppLayout } from '@/components/layout/AppLayout';
 
-export default function ProductsPage() {
+function ProductsContent() {
   const { user, tenantId } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [services, setServices] = useState<Service[]>([]);
@@ -32,7 +33,7 @@ export default function ProductsPage() {
   // Service form state
   const [serviceName, setServiceName] = useState('');
   const [serviceDescription, setServiceDescription] = useState('');
-  const [serviceRate, setServiceRate] = useState('');
+  const [servicePrice, setServicePrice] = useState('');
   const [serviceCategory, setServiceCategory] = useState('');
 
   useEffect(() => {
@@ -97,7 +98,7 @@ export default function ProductsPage() {
     await addDoc(collection(db, 'tenants', tenantId, 'services'), {
       name: serviceName,
       description: serviceDescription,
-      rate: parseFloat(serviceRate),
+      price: parseFloat(servicePrice),
       category: serviceCategory,
       tenantId,
       createdAt: new Date(),
@@ -107,7 +108,7 @@ export default function ProductsPage() {
     setServiceDialogOpen(false);
     setServiceName('');
     setServiceDescription('');
-    setServiceRate('');
+    setServicePrice('');
     setServiceCategory('');
   };
 
@@ -121,7 +122,6 @@ export default function ProductsPage() {
     await deleteDoc(doc(db, 'tenants', tenantId, 'services', id));
   };
 
-  if (!user) return <div>Please log in</div>;
   if (loading) return <div>Loading...</div>;
 
   return (
@@ -266,13 +266,13 @@ export default function ProductsPage() {
                       />
                     </div>
                     <div>
-                      <Label htmlFor="serviceRate">Hourly Rate</Label>
+                      <Label htmlFor="servicePrice">Price</Label>
                       <Input
-                        id="serviceRate"
+                        id="servicePrice"
                         type="number"
                         step="0.01"
-                        value={serviceRate}
-                        onChange={(e) => setServiceRate(e.target.value)}
+                        value={servicePrice}
+                        onChange={(e) => setServicePrice(e.target.value)}
                         required
                       />
                     </div>
@@ -295,7 +295,7 @@ export default function ProductsPage() {
                   <TableRow>
                     <TableHead>Name</TableHead>
                     <TableHead>Description</TableHead>
-                    <TableHead>Rate</TableHead>
+                    <TableHead>Price</TableHead>
                     <TableHead>Category</TableHead>
                     <TableHead>Actions</TableHead>
                   </TableRow>
@@ -305,7 +305,7 @@ export default function ProductsPage() {
                     <TableRow key={service.id}>
                       <TableCell>{service.name}</TableCell>
                       <TableCell>{service.description}</TableCell>
-                      <TableCell>${service.rate.toFixed(2)}/hr</TableCell>
+                      <TableCell>${service.price.toFixed(2)}</TableCell>
                       <TableCell>{service.category}</TableCell>
                       <TableCell>
                         <Button
@@ -335,5 +335,13 @@ export default function ProductsPage() {
         </TabsContent>
       </Tabs>
     </div>
+  );
+}
+
+export default function ProductsPage() {
+  return (
+    <AppLayout>
+      <ProductsContent />
+    </AppLayout>
   );
 }

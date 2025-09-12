@@ -14,6 +14,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useAuth } from '@/contexts/AuthContext';
 import { InvoiceTemplate, TemplateField, TemplateStyle } from '@/types';
 import { Plus, Edit, Trash2, Copy, Eye } from 'lucide-react';
+import { AppLayout } from '@/components/layout/AppLayout';
 
 const defaultFields: TemplateField[] = [
   {
@@ -77,7 +78,7 @@ const defaultStyle: TemplateStyle = {
   showWatermark: false,
 };
 
-export default function TemplatesPage() {
+function TemplatesContent() {
   const { tenantId } = useAuth();
   const [templates, setTemplates] = useState<InvoiceTemplate[]>([]);
   const [loading, setLoading] = useState(true);
@@ -210,7 +211,6 @@ export default function TemplatesPage() {
     });
   };
 
-  if (!tenantId) return <div>Please log in</div>;
   if (loading) return <div>Loading...</div>;
 
   return (
@@ -468,5 +468,13 @@ export default function TemplatesPage() {
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+export default function TemplatesPage() {
+  return (
+    <AppLayout>
+      <TemplatesContent />
+    </AppLayout>
   );
 }

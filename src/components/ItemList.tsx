@@ -130,6 +130,11 @@ function EditableTableRow({ item, index, onUpdate, onRemove }: EditableTableRowP
       <TableCell className="text-right font-medium">
         ${item.total.toFixed(2)}
       </TableCell>
+      <EditableTableCell
+        value={item.notes || ''}
+        onSave={(value) => handleUpdate('notes', value)}
+        className="text-muted-foreground"
+      />
       <TableCell className="text-center">
         <Button
           type="button"
@@ -160,6 +165,7 @@ function ReadOnlyTableRow({ item, index, onRemove, showDelete = false }: ReadOnl
       <TableCell className="text-center">{item.quantity}</TableCell>
       <TableCell className="text-right">${item.unitPrice.toFixed(2)}</TableCell>
       <TableCell className="text-right font-medium">${item.total.toFixed(2)}</TableCell>
+      <TableCell className="text-muted-foreground">{item.notes || ''}</TableCell>
       {showDelete && (
         <TableCell className="text-center">
           <Button
@@ -194,6 +200,7 @@ export default function ItemList({ items, mode, onUpdate, onRemove }: ItemListPr
           <TableHead className="bg-muted font-semibold text-center">Qty</TableHead>
           <TableHead className="bg-muted font-semibold text-right">Unit Price</TableHead>
           <TableHead className="bg-muted font-semibold text-right">Total</TableHead>
+          <TableHead className="bg-muted font-semibold">Notes</TableHead>
           {(mode === 'editable' || onRemove) && <TableHead className="bg-muted font-semibold text-center">Actions</TableHead>}
         </TableRow>
       </TableHeader>

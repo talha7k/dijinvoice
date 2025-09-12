@@ -1,4 +1,4 @@
- 'use client';
+'use client';
 
 import { useState, useEffect } from 'react';
 import { collection, query, onSnapshot, addDoc } from 'firebase/firestore';
@@ -13,8 +13,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CreditCard } from 'lucide-react';
+import { AppLayout } from '@/components/layout/AppLayout';
 
-export default function PaymentsPage() {
+function PaymentsContent() {
   const { user, tenantId } = useAuth();
   const [payments, setPayments] = useState<Payment[]>([]);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
@@ -76,7 +77,6 @@ export default function PaymentsPage() {
     setNotes('');
   };
 
-  if (!user) return <div>Please log in</div>;
   if (loading) return <div>Loading...</div>;
 
   return (
@@ -184,5 +184,13 @@ export default function PaymentsPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function PaymentsPage() {
+  return (
+    <AppLayout>
+      <PaymentsContent />
+    </AppLayout>
   );
 }

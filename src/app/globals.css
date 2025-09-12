@@ -135,3 +135,40 @@
   border-radius: 9999px;
   margin: 0.125rem 0;
 }
+
+/* Print styles */
+@media print {
+  /* Hide all UI elements when printing */
+  body > *:not(.print-content) {
+    display: none !important;
+  }
+  
+  /* Show only the invoice content */
+  .print-content {
+    display: block !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    background: white !important;
+    box-shadow: none !important;
+  }
+  
+  /* Remove dialog overlay and background */
+  .fixed.inset-0,
+  [data-state="open"] {
+    display: none !important;
+  }
+  
+  /* Ensure invoice template takes full page */
+  .print-content .max-w-4xl {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 1rem !important;
+  }
+  
+  /* Optimize QR code for printing */
+  canvas {
+    image-rendering: crisp-edges !important;
+  }
+}

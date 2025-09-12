@@ -11,8 +11,9 @@ import { useRouter } from 'next/navigation';
 import { collection, query, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Quote, Invoice, Payment, Product, Service } from '@/types';
+import { AppLayout } from '@/components/layout/AppLayout';
 
-export default function Dashboard() {
+function DashboardContent() {
   const { user, tenantId } = useAuth();
   const router = useRouter();
 
@@ -70,8 +71,6 @@ export default function Dashboard() {
 
     return () => unsubscribers.forEach(unsub => unsub());
   }, [tenantId]);
-
-  if (!user || !tenantId) return <div>Access denied</div>;
 
   return (
     <div className="container mx-auto p-4">
@@ -142,5 +141,13 @@ export default function Dashboard() {
         </Link>
       </div>
     </div>
+  );
+}
+
+export default function Dashboard() {
+  return (
+    <AppLayout>
+      <DashboardContent />
+    </AppLayout>
   );
 }

@@ -17,8 +17,9 @@ import EnglishInvoice from '@/components/templates/EnglishInvoice';
 import ArabicInvoice from '@/components/templates/ArabicInvoice';
 import InvoiceForm from '@/components/InvoiceForm';
 import { Receipt } from 'lucide-react';
+import { AppLayout } from '@/components/layout/AppLayout';
 
-export default function InvoicesPage() {
+function InvoicesContent() {
   const { user, tenantId } = useAuth();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [tenant, setTenant] = useState<Tenant | null>(null);
@@ -89,7 +90,310 @@ export default function InvoicesPage() {
     setDialogOpen(false);
   };
 
-  if (!user) return <div>Please log in</div>;
+  const handlePrintInvoice = (invoice: Invoice, tenantData: Tenant) => {
+    if (!tenantData) return;
+
+    // Create a new window for printing
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+
+    // Create the invoice HTML content
+    const invoiceContent = invoice.template === 'arabic' 
+      ? createArabicInvoiceHTML(invoice, tenantData)
+      : createEnglishInvoiceHTML(invoice, tenantData);
+
+    // Write the HTML to the new window
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Invoice #${invoice.id.slice(-8)}</title>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              margin: 0;
+              padding: 20px;
+              background: white;
+            }
+            .invoice-container {
+              max-width: 800px;
+              margin: 0 auto;
+              background: white;
+              padding: 40px;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin: 20px 0;
+            }
+            th, td {
+              border: 1px solid #ddd;
+              padding: 12px;
+              text-align: left;
+            }
+            th {
+              background-color: #f5f5f5;
+              font-weight: bold;
+            }
+            .text-right { text-align: right; }
+            .text-center { text-align: center; }
+            .font-bold { font-weight: bold; }
+            .mb-4 { margin-bottom: 16px; }
+            .mb-8 { margin-bottom: 32px; }
+            .grid { display: grid; }
+            .grid-cols-2 { grid-template-columns: 1fr 1fr; }
+            .gap-4 { gap: 16px; }
+            .gap-8 { gap: 32px; }
+            .flex { display: flex; }
+            .justify-between { justify-content: space-between; }
+            .justify-end { justify-content: flex-end; }
+            .justify-start { justify-content: flex-start; }
+            .items-start { align-items: flex-start; }
+            .w-64 { width: 256px; }
+            .text-3xl { font-size: 1.875rem; }
+            .text-xl { font-size: 1.25rem; }
+            .text-lg { font-size: 1.125rem; }
+            .text-sm { font-size: 0.875rem; }
+            .text-gray-600 { color: #666; }
+            .text-gray-800 { color: #333; }
+            .border-t { border-top: 1px solid #ddd; }
+            .pt-2 { padding-top: 8px; }
+            .py-2 { padding-top: 8px; padding-bottom: 8px; }
+            @media print {
+              body { margin: 0; padding: 0; }
+              .invoice-container { padding: 20px; }
+            }
+          </style>
+        </head>
+        <body>
+          ${invoiceContent}
+        </body>
+      </html>
+    `);
+
+    printWindow.document.close();
+    
+    // Wait for the content to load before printing
+    printWindow.onload = () => {
+      printWindow.print();
+      printWindow.close();
+    };
+  };
+
+  const createEnglishInvoiceHTML = (invoice: Invoice, tenantData: Tenant) => {
+    return `
+      <div class="invoice-container">
+        <div class="flex justify-between items-start mb-8">
+          <div>
+            <h1 class="text-3xl font-bold text-gray-800">INVOICE</h1>
+            <p class="text-gray-600">Invoice #${invoice.id.slice(-8)}</p>
+          </div>
+          <div class="text-right">
+            <h2 class="text-xl font-semibold">${tenantData.name}</h2>
+            <p>${tenantData.address}</p>
+            <p>${tenantData.email}</p>
+            <p>${tenantData.phone}</p>
+            ${tenantData.vatNumber ? `<p>VAT: ${tenantData.vatNumber}</p>` : ''}
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-8 mb-8">
+          <div>
+            <h3 class="font-semibold mb-2">Bill To:</h3>
+            <p class="font-medium">${invoice.clientName}</p>
+            <p>${invoice.clientAddress}</p>
+            <p>${invoice.clientEmail}</p>
+            ${invoice.clientVAT ? `<p>VAT: ${invoice.clientVAT}</p>` : ''}
+          </div>
+          <div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <p class="text-gray-600">Invoice Date:</p>
+                <p class="font-medium">${invoice.createdAt.toLocaleDateString()}</p>
+              </div>
+              <div>
+                <p class="text-gray-600">Due Date:</p>
+                <p class="font-medium">${invoice.dueDate.toLocaleDateString()}</p>
+              </div>
+              <div>
+                <p class="text-gray-600">Status:</p>
+                <p class="font-medium capitalize">${invoice.status}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Description</th>
+              <th class="text-right">Qty</th>
+              <th class="text-right">Unit Price</th>
+              <th class="text-right">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${invoice.items.map(item => `
+              <tr>
+                <td>
+                  <div>
+                    <p class="font-medium">${item.name}</p>
+                    ${item.description ? `<p class="text-gray-600 text-sm">${item.description}</p>` : ''}
+                  </div>
+                </td>
+                <td class="text-right">${item.quantity}</td>
+                <td class="text-right">$${item.unitPrice.toFixed(2)}</td>
+                <td class="text-right">$${item.total.toFixed(2)}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+
+        <div class="flex justify-end mb-8">
+          <div class="w-64">
+            <div class="flex justify-between py-2">
+              <span>Subtotal:</span>
+              <span>$${invoice.subtotal.toFixed(2)}</span>
+            </div>
+            <div class="flex justify-between py-2">
+              <span>Tax (${invoice.taxRate}%):</span>
+              <span>$${invoice.taxAmount.toFixed(2)}</span>
+            </div>
+            <div class="flex justify-between py-2 font-bold text-lg border-t pt-2">
+              <span>Total:</span>
+              <span>$${invoice.total.toFixed(2)}</span>
+            </div>
+          </div>
+        </div>
+
+        ${invoice.notes ? `
+          <div class="mb-8">
+            <h3 class="font-semibold mb-2">Notes:</h3>
+            <p class="text-gray-600">${invoice.notes}</p>
+          </div>
+        ` : ''}
+
+        ${invoice.includeQR && tenantData.vatNumber ? `
+          <div class="flex justify-end">
+            <div class="text-center">
+              <p class="text-sm text-gray-600 mb-2">ZATCA Compliant QR Code</p>
+              <div id="qr-code-placeholder" style="width: 150px; height: 150px; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                QR Code will be generated here
+              </div>
+            </div>
+          </div>
+        ` : ''}
+      </div>
+    `;
+  };
+
+  const createArabicInvoiceHTML = (invoice: Invoice, tenantData: Tenant) => {
+    return `
+      <div class="invoice-container" dir="rtl" style="font-family: Arial, sans-serif;">
+        <div class="flex justify-between items-start mb-8 flex-row-reverse">
+          <div class="text-right">
+            <h1 class="text-3xl font-bold text-gray-800">فاتورة</h1>
+            <p class="text-gray-600">رقم الفاتورة #${invoice.id.slice(-8)}</p>
+          </div>
+          <div class="text-left">
+            <h2 class="text-xl font-semibold">${tenantData.name}</h2>
+            <p>${tenantData.address}</p>
+            <p>${tenantData.email}</p>
+            <p>${tenantData.phone}</p>
+            ${tenantData.vatNumber ? `<p>الرقم الضريبي: ${tenantData.vatNumber}</p>` : ''}
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-8 mb-8">
+          <div class="text-right">
+            <h3 class="font-semibold mb-2">:إلى</h3>
+            <p class="font-medium">${invoice.clientName}</p>
+            <p>${invoice.clientAddress}</p>
+            <p>${invoice.clientEmail}</p>
+            ${invoice.clientVAT ? `<p>الرقم الضريبي: ${invoice.clientVAT}</p>` : ''}
+          </div>
+          <div class="text-left">
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <p class="text-gray-600">:تاريخ الفاتورة</p>
+                <p class="font-medium">${invoice.createdAt.toLocaleDateString('ar-SA')}</p>
+              </div>
+              <div>
+                <p class="text-gray-600">:تاريخ الاستحقاق</p>
+                <p class="font-medium">${invoice.dueDate.toLocaleDateString('ar-SA')}</p>
+              </div>
+              <div>
+                <p class="text-gray-600">:الحالة</p>
+                <p class="font-medium capitalize">${invoice.status === 'paid' ? 'مدفوع' : invoice.status === 'sent' ? 'مرسل' : invoice.status === 'draft' ? 'مسودة' : invoice.status}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th class="text-right">الوصف</th>
+              <th class="text-center">الكمية</th>
+              <th class="text-center">سعر الوحدة</th>
+              <th class="text-center">المجموع</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${invoice.items.map(item => `
+              <tr>
+                <td class="text-right">
+                  <div>
+                    <p class="font-medium">${item.name}</p>
+                    ${item.description ? `<p class="text-gray-600 text-sm">${item.description}</p>` : ''}
+                  </div>
+                </td>
+                <td class="text-center">${item.quantity}</td>
+                <td class="text-center">${item.unitPrice.toFixed(2)} ريال</td>
+                <td class="text-center">${item.total.toFixed(2)} ريال</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+
+        <div class="flex justify-start mb-8">
+          <div class="w-64">
+            <div class="flex justify-between py-2 flex-row-reverse">
+              <span>:المجموع الفرعي</span>
+              <span>${invoice.subtotal.toFixed(2)} ريال</span>
+            </div>
+            <div class="flex justify-between py-2 flex-row-reverse">
+              <span>:الضريبة (${invoice.taxRate}%)</span>
+              <span>${invoice.taxAmount.toFixed(2)} ريال</span>
+            </div>
+            <div class="flex justify-between py-2 font-bold text-lg border-t pt-2 flex-row-reverse">
+              <span>:المجموع الكلي</span>
+              <span>${invoice.total.toFixed(2)} ريال</span>
+            </div>
+          </div>
+        </div>
+
+        ${invoice.notes ? `
+          <div class="mb-8 text-right">
+            <h3 class="font-semibold mb-2">:ملاحظات</h3>
+            <p class="text-gray-600">${invoice.notes}</p>
+          </div>
+        ` : ''}
+
+        ${invoice.includeQR && tenantData.vatNumber ? `
+          <div class="flex justify-start">
+            <div class="text-center">
+              <p class="text-sm text-gray-600 mb-2">رمز QR متوافق مع زاتكا</p>
+              <div id="qr-code-placeholder" style="width: 150px; height: 150px; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                سيتم إنشاء رمز QR هنا
+              </div>
+            </div>
+          </div>
+        ` : ''}
+      </div>
+    `;
+  };
+
   if (loading) return <div>Loading...</div>;
 
   return (
@@ -178,7 +482,7 @@ export default function InvoicesPage() {
                                 >
                                   Arabic Template
                                 </Button>
-                                <Button variant="outline" onClick={() => window.print()}>
+                                <Button variant="outline" onClick={() => handlePrintInvoice(selectedInvoice, tenant)}>
                                   <Printer className="h-4 w-4 mr-2" />
                                   Print
                                 </Button>
@@ -243,5 +547,13 @@ export default function InvoicesPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function InvoicesPage() {
+  return (
+    <AppLayout>
+      <InvoicesContent />
+    </AppLayout>
   );
 }

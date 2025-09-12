@@ -13,7 +13,7 @@ export interface Service {
   id: string;
   name: string;
   description?: string;
-  rate: number; // hourly rate
+  price: number; // total price
   category?: string;
   tenantId: string;
   createdAt: Date;
@@ -30,6 +30,7 @@ export interface QuoteItem {
   quantity: number;
   unitPrice: number;
   total: number;
+  notes?: string;
 }
 
 export interface Quote {

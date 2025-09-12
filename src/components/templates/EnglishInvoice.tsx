@@ -10,7 +10,7 @@ interface EnglishInvoiceProps {
 
 export default function EnglishInvoice({ invoice, tenant }: EnglishInvoiceProps) {
   return (
-    <div className="max-w-4xl mx-auto bg-white p-8 shadow-lg">
+    <div className="max-w-4xl mx-auto bg-white p-8 shadow-lg print-content">
       {/* Header */}
       <div className="flex justify-between items-start mb-8">
         <div>

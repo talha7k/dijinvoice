@@ -34,6 +34,10 @@ export default function ZatcaQR({ invoice, tenant }: ZatcaQRProps) {
     QRCode.toCanvas(canvasRef.current, qrString, {
       width: 150,
       margin: 1,
+      color: {
+        dark: '#000000',
+        light: '#FFFFFF'
+      }
     });
   }, [invoice, tenant]);
 

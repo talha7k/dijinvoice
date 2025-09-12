@@ -41,12 +41,7 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <AuthProvider>
-            <div className="flex h-screen bg-background">
-              <CollapsibleSidebar />
-              <main className="flex-1 md:ml-16 lg:ml-64 overflow-auto">
-                {children}
-              </main>
-            </div>
+            {children}
           </AuthProvider>
         </ThemeProvider>
       </body>

@@ -10,7 +10,7 @@ interface ArabicInvoiceProps {
 
 export default function ArabicInvoice({ invoice, tenant }: ArabicInvoiceProps) {
   return (
-    <div dir="rtl" className="max-w-4xl mx-auto bg-white p-8 shadow-lg" style={{ fontFamily: 'var(--font-amiri)' }}>
+    <div dir="rtl" className="max-w-4xl mx-auto bg-white p-8 shadow-lg print-content" style={{ fontFamily: 'var(--font-amiri)' }}>
       {/* Header */}
       <div className="flex justify-between items-start mb-8 flex-row-reverse">
         <div className="text-right">

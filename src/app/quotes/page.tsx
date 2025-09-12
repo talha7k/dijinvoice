@@ -11,8 +11,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import QuoteForm from '@/components/QuoteForm';
 import { FileText } from 'lucide-react';
+import { AppLayout } from '@/components/layout/AppLayout';
 
-export default function QuotesPage() {
+function QuotesContent() {
   const { user, tenantId } = useAuth();
   const [quotes, setQuotes] = useState<Quote[]>([]);
   const [loading, setLoading] = useState(true);
@@ -100,7 +101,6 @@ export default function QuotesPage() {
     }
   };
 
-  if (!user) return <div>Please log in</div>;
   if (loading) return <div>Loading...</div>;
 
   return (
@@ -170,5 +170,13 @@ export default function QuotesPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function QuotesPage() {
+  return (
+    <AppLayout>
+      <QuotesContent />
+    </AppLayout>
   );
 }
