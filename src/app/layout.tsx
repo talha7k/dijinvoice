@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Amiri } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { CollapsibleSidebar } from "@/components/ui/collapsible-sidebar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,7 +37,12 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${amiri.variable} antialiased`}
       >
         <AuthProvider>
-          {children}
+          <div className="flex h-screen bg-background">
+            <CollapsibleSidebar />
+            <main className="flex-1 md:ml-16 lg:ml-64 overflow-auto">
+              {children}
+            </main>
+          </div>
         </AuthProvider>
       </body>
     </html>
