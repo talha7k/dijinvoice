@@ -8,7 +8,7 @@ import { Combobox } from '@/components/ui/combobox';
 import ItemList from '@/components/ItemList';
 import ClientInfo from '@/components/ClientInfo';
 import FormSummary from '@/components/FormSummary';
-import { Quote, QuoteItem } from '@/types';
+import { Quote, Item } from '@/types';
 import {
   sampleProductsServices,
   getProductOptions,
@@ -25,7 +25,7 @@ export default function QuoteForm({ onSubmit }: QuoteFormProps) {
   const [clientName, setClientName] = useState('');
   const [clientEmail, setClientEmail] = useState('');
   const [clientAddress, setClientAddress] = useState('');
-  const [items, setItems] = useState<QuoteItem[]>([]);
+  const [items, setItems] = useState<Item[]>([]);
   const [taxRate, setTaxRate] = useState(0);
   const [notes, setNotes] = useState('');
 
@@ -59,7 +59,7 @@ export default function QuoteForm({ onSubmit }: QuoteFormProps) {
     }
   };
 
-  const updateItem = (index: number, field: keyof QuoteItem, value: string | number) => {
+  const updateItem = (index: number, field: keyof Item, value: string | number) => {
     const newItems = [...items];
     newItems[index] = { ...newItems[index], [field]: value };
     if (field === 'quantity' || field === 'unitPrice') {

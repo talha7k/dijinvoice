@@ -12,6 +12,7 @@ import { useAuth } from "@/contexts/AuthContext"
 import {
   BarChart3,
   Building2,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   FileText,
@@ -25,6 +26,7 @@ import {
   Users,
   Wallet,
 } from "lucide-react"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { auth } from "@/lib/firebase"
 
 interface SidebarProps {
@@ -38,29 +40,56 @@ const navigationItems = [
     icon: Home,
   },
   {
-    title: "Invoices",
-    href: "/invoices",
+    title: "Sales",
     icon: Receipt,
+    children: [
+      {
+        title: "Invoices",
+        href: "/invoices",
+        icon: Receipt,
+      },
+      {
+        title: "Quotes",
+        href: "/quotes",
+        icon: FileText,
+      },
+      {
+        title: "Payments",
+        href: "/payments",
+        icon: Wallet,
+      },
+      {
+        title: "Products & Services",
+        href: "/products-services",
+        icon: BarChart3,
+      },
+      {
+        title: "Customers",
+        href: "/customers",
+        icon: Users,
+      },
+    ]
   },
   {
-    title: "Quotes",
-    href: "/quotes",
-    icon: FileText,
-  },
-  {
-    title: "Payments",
-    href: "/payments",
-    icon: Wallet,
-  },
-  {
-    title: "Products",
-    href: "/products",
-    icon: BarChart3,
-  },
-  {
-    title: "Customers",
-    href: "/customers",
-    icon: Users,
+    title: "Purchases",
+    icon: Receipt,
+    children: [
+      {
+        title: "Invoices",
+        href: "/purchase-invoices",
+        icon: Receipt,
+      },
+      {
+        title: "Products & Services",
+        href: "/purchase-products-services",
+        icon: BarChart3,
+      },
+      {
+        title: "Suppliers",
+        href: "/suppliers",
+        icon: Users,
+      },
+    ]
   },
   {
     title: "Company",
@@ -76,10 +105,21 @@ const navigationItems = [
 
 export function CollapsibleSidebar({ className }: SidebarProps) {
   const [isCollapsed, setIsCollapsed] = React.useState(false)
+  const [openSections, setOpenSections] = React.useState<{ [key: string]: boolean }>({
+    Sales: true,
+    Purchases: true,
+  })
   const pathname = usePathname()
   const router = useRouter()
   const { theme, toggleTheme } = useTheme()
   const { user, tenantId } = useAuth()
+
+  const toggleSection = (title: string) => {
+    setOpenSections(prev => ({
+      ...prev,
+      [title]: !prev[title]
+    }))
+  }
 
   const handleLogout = async () => {
     try {
@@ -137,22 +177,71 @@ export function CollapsibleSidebar({ className }: SidebarProps) {
           <ScrollArea className="flex-1 px-3 py-4">
             <nav className="space-y-2">
               {navigationItems.map((item) => {
-                const isActive = pathname === item.href
-                return (
-                  <Link key={item.href} href={item.href}>
-                    <Button
-                      variant={isActive ? "secondary" : "ghost"}
-                      className={cn(
-                        "w-full justify-start",
-                        isCollapsed ? "px-2" : "px-3",
-                        isActive && "bg-secondary"
+                if (item.children) {
+                  const isSectionOpen = openSections[item.title]
+                  const hasActiveChild = item.children.some(child => pathname === child.href)
+                  return (
+                    <Collapsible key={item.title} open={isSectionOpen} onOpenChange={() => toggleSection(item.title)}>
+                      <CollapsibleTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          className={cn(
+                            "w-full justify-start",
+                            isCollapsed ? "px-2" : "px-3",
+                            hasActiveChild && "bg-secondary/50"
+                          )}
+                        >
+                          <item.icon className={cn("h-4 w-4", !isCollapsed && "mr-3")} />
+                          {!isCollapsed && (
+                            <>
+                              <span>{item.title}</span>
+                              <ChevronDown className={cn("h-4 w-4 ml-auto transition-transform", isSectionOpen ? "rotate-180" : "")} />
+                            </>
+                          )}
+                        </Button>
+                      </CollapsibleTrigger>
+                      {!isCollapsed && (
+                        <CollapsibleContent className="space-y-1 ml-6">
+                          {item.children.map((child) => {
+                            const isActive = pathname === child.href
+                            return (
+                              <Link key={child.href} href={child.href}>
+                                <Button
+                                  variant={isActive ? "secondary" : "ghost"}
+                                  size="sm"
+                                  className={cn(
+                                    "w-full justify-start px-2",
+                                    isActive && "bg-secondary"
+                                  )}
+                                >
+                                  <child.icon className="h-3 w-3 mr-2" />
+                                  <span className="text-sm">{child.title}</span>
+                                </Button>
+                              </Link>
+                            )
+                          })}
+                        </CollapsibleContent>
                       )}
-                    >
-                      <item.icon className={cn("h-4 w-4", !isCollapsed && "mr-3")} />
-                      {!isCollapsed && <span>{item.title}</span>}
-                    </Button>
-                  </Link>
-                )
+                    </Collapsible>
+                  )
+                } else {
+                  const isActive = pathname === item.href
+                  return (
+                    <Link key={item.href} href={item.href!}>
+                      <Button
+                        variant={isActive ? "secondary" : "ghost"}
+                        className={cn(
+                          "w-full justify-start",
+                          isCollapsed ? "px-2" : "px-3",
+                          isActive && "bg-secondary"
+                        )}
+                      >
+                        <item.icon className={cn("h-4 w-4", !isCollapsed && "mr-3")} />
+                        {!isCollapsed && <span>{item.title}</span>}
+                      </Button>
+                    </Link>
+                  )
+                }
               })}
             </nav>
           </ScrollArea>
@@ -246,21 +335,63 @@ export function CollapsibleSidebar({ className }: SidebarProps) {
             <ScrollArea className="flex-1 px-3 py-4">
               <nav className="space-y-2">
                 {navigationItems.map((item) => {
-                  const isActive = pathname === item.href
-                  return (
-                    <Link key={item.href} href={item.href}>
-                      <Button
-                        variant={isActive ? "secondary" : "ghost"}
-                        className={cn(
-                          "w-full justify-start px-3",
-                          isActive && "bg-secondary"
-                        )}
-                      >
-                        <item.icon className="h-4 w-4 mr-3" />
-                        <span>{item.title}</span>
-                      </Button>
-                    </Link>
-                  )
+                  if (item.children) {
+                    const isSectionOpen = openSections[item.title]
+                    const hasActiveChild = item.children.some(child => pathname === child.href)
+                    return (
+                      <Collapsible key={item.title} open={isSectionOpen} onOpenChange={() => toggleSection(item.title)}>
+                        <CollapsibleTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            className={cn(
+                              "w-full justify-start px-3",
+                              hasActiveChild && "bg-secondary/50"
+                            )}
+                          >
+                            <item.icon className="h-4 w-4 mr-3" />
+                            <span>{item.title}</span>
+                            <ChevronDown className={cn("h-4 w-4 ml-auto transition-transform", isSectionOpen ? "rotate-180" : "")} />
+                          </Button>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="space-y-1 ml-6">
+                          {item.children.map((child) => {
+                            const isActive = pathname === child.href
+                            return (
+                              <Link key={child.href} href={child.href}>
+                                <Button
+                                  variant={isActive ? "secondary" : "ghost"}
+                                  size="sm"
+                                  className={cn(
+                                    "w-full justify-start px-2",
+                                    isActive && "bg-secondary"
+                                  )}
+                                >
+                                  <child.icon className="h-3 w-3 mr-2" />
+                                  <span className="text-sm">{child.title}</span>
+                                </Button>
+                              </Link>
+                            )
+                          })}
+                        </CollapsibleContent>
+                      </Collapsible>
+                    )
+                  } else {
+                    const isActive = pathname === item.href
+                    return (
+                      <Link key={item.href} href={item.href!}>
+                        <Button
+                          variant={isActive ? "secondary" : "ghost"}
+                          className={cn(
+                            "w-full justify-start px-3",
+                            isActive && "bg-secondary"
+                          )}
+                        >
+                          <item.icon className="h-4 w-4 mr-3" />
+                          <span>{item.title}</span>
+                        </Button>
+                      </Link>
+                    )
+                  }
                 })}
               </nav>
             </ScrollArea>

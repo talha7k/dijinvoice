@@ -16,7 +16,7 @@ export interface Service {
   tenantId: string;
 }
 
-export interface QuoteItem {
+export interface Item {
   id: string;
   type: 'product' | 'service';
   productId?: string;
@@ -34,7 +34,7 @@ export interface Quote {
   clientName: string;
   clientEmail: string;
   clientAddress?: string;
-  items: QuoteItem[];
+  items: Item[];
   subtotal: number;
   taxRate: number;
   taxAmount: number;
@@ -46,14 +46,10 @@ export interface Quote {
   notes?: string;
 }
 
-export interface Invoice {
+interface BaseInvoice {
   id: string;
   tenantId: string;
-  quoteId?: string;
-  clientName: string;
-  clientEmail: string;
-  clientAddress?: string;
-  items: QuoteItem[];
+  items: Item[];
   subtotal: number;
   taxRate: number;
   taxAmount: number;
@@ -66,6 +62,23 @@ export interface Invoice {
   payments: Payment[];
 }
 
+export interface SalesInvoice extends BaseInvoice {
+  type: 'sales';
+  quoteId?: string;
+  clientName: string;
+  clientEmail: string;
+  clientAddress?: string;
+}
+
+export interface PurchaseInvoice extends BaseInvoice {
+  type: 'purchase';
+  supplierName: string;
+  supplierEmail: string;
+  supplierAddress?: string;
+}
+
+export type Invoice = SalesInvoice | PurchaseInvoice;
+
 export interface Payment {
   id: string;
   invoiceId: string;
@@ -74,6 +87,29 @@ export interface Payment {
   paymentMethod: string;
   notes?: string;
   tenantId: string;
+}
+
+export interface Customer {
+  id: string;
+  name: string;
+  email: string;
+  address?: string;
+  phone?: string;
+  tenantId: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Supplier {
+  id: string;
+  name: string;
+  email: string;
+  address?: string;
+  phone?: string;
+  vatNumber?: string;
+  tenantId: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface Tenant {

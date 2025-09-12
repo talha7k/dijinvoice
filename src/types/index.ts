@@ -20,7 +20,7 @@ export interface Service {
   updatedAt: Date;
 }
 
-export interface QuoteItem {
+export interface Item {
   id: string;
   type: 'product' | 'service';
   productId?: string;
@@ -39,7 +39,7 @@ export interface Quote {
   clientName: string;
   clientEmail: string;
   clientAddress?: string;
-  items: QuoteItem[];
+  items: Item[];
   subtotal: number;
   taxRate: number;
   taxAmount: number;
@@ -55,16 +55,24 @@ export interface Invoice {
   id: string;
   tenantId: string;
   quoteId?: string;
-  clientName: string;
-  clientEmail: string;
-  clientAddress?: string;
-  clientVAT?: string;
-  items: QuoteItem[];
+  type: 'sales' | 'purchase';
+  clientName?: string; // For sales invoices
+  clientEmail?: string; // For sales invoices
+  clientAddress?: string; // For sales invoices
+  clientVAT?: string; // For sales invoices
+  supplierId?: string; // For purchase invoices
+  supplierName?: string; // For purchase invoices
+  supplierEmail?: string; // For purchase invoices
+  supplierAddress?: string; // For purchase invoices
+  supplierVAT?: string; // For purchase invoices
+  items: Item[];
   subtotal: number;
   taxRate: number;
   taxAmount: number;
   total: number;
   status: 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled';
+  invoiceNumber?: string; // For purchase invoices
+  invoiceDate?: Date; // For purchase invoices
   dueDate: Date;
   notes?: string;
   template: 'english' | 'arabic';
@@ -119,6 +127,43 @@ export interface InvoiceTemplate {
   fields: TemplateField[];
   style: TemplateStyle;
   customCSS?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Supplier {
+  id: string;
+  name: string;
+  email: string;
+  address?: string;
+  phone?: string;
+  vatNumber?: string;
+  contactPerson?: string;
+  tenantId: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface PurchaseInvoice {
+  id: string;
+  tenantId: string;
+  supplierId: string;
+  supplierName: string;
+  supplierEmail: string;
+  supplierAddress?: string;
+  supplierVAT?: string;
+  items: Item[];
+  subtotal: number;
+  taxRate: number;
+  taxAmount: number;
+  total: number;
+  status: 'draft' | 'sent' | 'received' | 'partially_paid' | 'paid' | 'cancelled';
+  invoiceNumber?: string;
+  invoiceDate: Date;
+  dueDate: Date;
+  notes?: string;
+  template: 'english' | 'arabic';
+  includeQR: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

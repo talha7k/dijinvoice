@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { QuoteItem } from '@/types';
+import { Item } from '@/types';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Trash2 } from 'lucide-react';
@@ -89,14 +89,14 @@ function EditableTableCell({ value, type = 'text', step, min, onSave, className 
 }
 
 interface EditableTableRowProps {
-  item: QuoteItem;
+  item: Item;
   index: number;
-  onUpdate: (index: number, field: keyof QuoteItem, value: string | number) => void;
+  onUpdate: (index: number, field: keyof Item, value: string | number) => void;
   onRemove: (index: number) => void;
 }
 
 function EditableTableRow({ item, index, onUpdate, onRemove }: EditableTableRowProps) {
-  const handleUpdate = (field: keyof QuoteItem, value: string | number) => {
+  const handleUpdate = (field: keyof Item, value: string | number) => {
     onUpdate(index, field, value);
   };
 
@@ -151,7 +151,7 @@ function EditableTableRow({ item, index, onUpdate, onRemove }: EditableTableRowP
 }
 
 interface ReadOnlyTableRowProps {
-  item: QuoteItem;
+  item: Item;
   index: number;
   onRemove?: (index: number) => void;
   showDelete?: boolean;
@@ -184,9 +184,9 @@ function ReadOnlyTableRow({ item, index, onRemove, showDelete = false }: ReadOnl
 }
 
 interface ItemListProps {
-  items: QuoteItem[];
+  items: Item[];
   mode: 'editable' | 'readonly';
-  onUpdate?: (index: number, field: keyof QuoteItem, value: string | number) => void;
+  onUpdate?: (index: number, field: keyof Item, value: string | number) => void;
   onRemove?: (index: number) => void;
 }
 

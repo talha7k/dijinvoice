@@ -4,11 +4,13 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Combobox } from '@/components/ui/combobox';
 import ItemList from '@/components/ItemList';
 import ClientInfo from '@/components/ClientInfo';
+import SupplierInfo from '@/components/SupplierInfo';
 import FormSummary from '@/components/FormSummary';
-import { Invoice, QuoteItem } from '@/types';
+import { Invoice, Item } from '@/types';
 import {
   sampleProductsServices,
   getProductOptions,
@@ -18,16 +20,34 @@ import {
 
 interface InvoiceFormProps {
   onSubmit: (invoice: Omit<Invoice, 'id' | 'tenantId' | 'createdAt' | 'updatedAt'>) => void;
+  defaultType?: 'sales' | 'purchase';
 }
 
-export default function InvoiceForm({ onSubmit }: InvoiceFormProps) {
+export default function InvoiceForm({ onSubmit, defaultType = 'sales' }: InvoiceFormProps) {
+  const [invoiceType, setInvoiceType] = useState<'sales' | 'purchase'>(defaultType);
+
+  // Client fields (for sales invoices)
   const [selectedCustomerId, setSelectedCustomerId] = useState<string>('');
   const [clientName, setClientName] = useState('');
   const [clientEmail, setClientEmail] = useState('');
   const [clientAddress, setClientAddress] = useState('');
   const [clientVAT, setClientVAT] = useState<string>('');
 
-  const [items, setItems] = useState<QuoteItem[]>([]);
+  // Supplier fields (for purchase invoices)
+  const [selectedSupplierId, setSelectedSupplierId] = useState<string>('');
+  const [supplierName, setSupplierName] = useState('');
+  const [supplierEmail, setSupplierEmail] = useState('');
+  const [supplierAddress, setSupplierAddress] = useState('');
+  const [supplierVAT, setSupplierVAT] = useState<string>('');
+
+  // Purchase invoice specific fields
+  const [invoiceNumber, setInvoiceNumber] = useState('');
+  const [invoiceDate, setInvoiceDate] = useState(() => {
+    const date = new Date();
+    return date.toISOString().split('T')[0];
+  });
+
+  const [items, setItems] = useState<Item[]>([]);
   const [taxRate, setTaxRate] = useState(0);
   const [notes, setNotes] = useState('');
   const [dueDate, setDueDate] = useState(() => {
@@ -66,7 +86,7 @@ export default function InvoiceForm({ onSubmit }: InvoiceFormProps) {
     }
   };
 
-  const updateItem = (index: number, field: keyof QuoteItem, value: string | number) => {
+  const updateItem = (index: number, field: keyof Item, value: string | number) => {
     const newItems = [...items];
     newItems[index] = { ...newItems[index], [field]: value };
     if (field === 'quantity' || field === 'unitPrice') {
@@ -85,39 +105,109 @@ export default function InvoiceForm({ onSubmit }: InvoiceFormProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit({
-      clientName,
-      clientEmail,
-      clientAddress,
-      clientVAT,
+    const baseInvoice = {
+      type: invoiceType,
       items,
       subtotal,
       taxRate,
       taxAmount,
       total,
-      status: 'draft',
+      status: 'draft' as const,
       dueDate: new Date(dueDate),
       notes,
       template: 'english' as const,
       includeQR: false,
-    } as Omit<Invoice, 'id' | 'tenantId' | 'createdAt' | 'updatedAt'>);
+    };
+
+    if (invoiceType === 'sales') {
+      onSubmit({
+        ...baseInvoice,
+        clientName,
+        clientEmail,
+        clientAddress,
+        clientVAT,
+      } as Omit<Invoice, 'id' | 'tenantId' | 'createdAt' | 'updatedAt'>);
+    } else {
+      onSubmit({
+        ...baseInvoice,
+        supplierId: selectedSupplierId,
+        supplierName,
+        supplierEmail,
+        supplierAddress,
+        supplierVAT,
+        invoiceNumber,
+        invoiceDate: new Date(invoiceDate),
+      } as Omit<Invoice, 'id' | 'tenantId' | 'createdAt' | 'updatedAt'>);
+    }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <ClientInfo
-        selectedCustomerId={selectedCustomerId}
-        clientName={clientName}
-        clientEmail={clientEmail}
-        clientAddress={clientAddress}
-        clientVAT={clientVAT}
-        showVAT={true}
-        onCustomerSelect={setSelectedCustomerId}
-        onClientNameChange={setClientName}
-        onClientEmailChange={setClientEmail}
-        onClientAddressChange={setClientAddress}
-        onClientVATChange={setClientVAT}
-      />
+      <div>
+        <Label htmlFor="invoice-type">Invoice Type</Label>
+        <Select value={invoiceType} onValueChange={(value: 'sales' | 'purchase') => setInvoiceType(value)}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select invoice type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="sales">Sales Invoice</SelectItem>
+            <SelectItem value="purchase">Purchase Invoice</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {invoiceType === 'sales' ? (
+        <ClientInfo
+          selectedCustomerId={selectedCustomerId}
+          clientName={clientName}
+          clientEmail={clientEmail}
+          clientAddress={clientAddress}
+          clientVAT={clientVAT}
+          showVAT={true}
+          onCustomerSelect={setSelectedCustomerId}
+          onClientNameChange={setClientName}
+          onClientEmailChange={setClientEmail}
+          onClientAddressChange={setClientAddress}
+          onClientVATChange={setClientVAT}
+        />
+      ) : (
+        <>
+          <SupplierInfo
+            selectedSupplierId={selectedSupplierId}
+            supplierName={supplierName}
+            supplierEmail={supplierEmail}
+            supplierAddress={supplierAddress}
+            supplierVAT={supplierVAT}
+            showVAT={true}
+            onSupplierSelect={setSelectedSupplierId}
+            onSupplierNameChange={setSupplierName}
+            onSupplierEmailChange={setSupplierEmail}
+            onSupplierAddressChange={setSupplierAddress}
+            onSupplierVATChange={setSupplierVAT}
+          />
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="invoice-number">Invoice Number</Label>
+              <Input
+                id="invoice-number"
+                value={invoiceNumber}
+                onChange={(e) => setInvoiceNumber(e.target.value)}
+                placeholder="Supplier invoice number"
+              />
+            </div>
+            <div>
+              <Label htmlFor="invoice-date">Invoice Date</Label>
+              <Input
+                id="invoice-date"
+                type="date"
+                value={invoiceDate}
+                onChange={(e) => setInvoiceDate(e.target.value)}
+              />
+            </div>
+          </div>
+        </>
+      )}
 
       <div>
         <div className="flex justify-between items-center mb-4">
