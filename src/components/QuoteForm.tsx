@@ -126,6 +126,7 @@ export default function QuoteForm({ onSubmit }: QuoteFormProps) {
             value={clientName}
             onChange={(e) => setClientName(e.target.value)}
             required
+            readOnly={!!selectedCustomerId}
           />
         </div>
         <div>
@@ -136,6 +137,7 @@ export default function QuoteForm({ onSubmit }: QuoteFormProps) {
             value={clientEmail}
             onChange={(e) => setClientEmail(e.target.value)}
             required
+            readOnly={!!selectedCustomerId}
           />
         </div>
       </div>
@@ -145,6 +147,7 @@ export default function QuoteForm({ onSubmit }: QuoteFormProps) {
           id="clientAddress"
           value={clientAddress}
           onChange={(e) => setClientAddress(e.target.value)}
+          readOnly={!!selectedCustomerId}
         />
       </div>
 

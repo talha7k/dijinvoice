@@ -137,6 +137,7 @@ export default function InvoiceForm({ onSubmit }: InvoiceFormProps) {
             value={clientName}
             onChange={(e) => setClientName(e.target.value)}
             required
+            readOnly={!!selectedCustomerId}
           />
         </div>
         <div>
@@ -147,6 +148,7 @@ export default function InvoiceForm({ onSubmit }: InvoiceFormProps) {
             value={clientEmail}
             onChange={(e) => setClientEmail(e.target.value)}
             required
+            readOnly={!!selectedCustomerId}
           />
         </div>
       </div>
@@ -158,6 +160,7 @@ export default function InvoiceForm({ onSubmit }: InvoiceFormProps) {
             id="clientAddress"
             value={clientAddress}
             onChange={(e) => setClientAddress(e.target.value)}
+            readOnly={!!selectedCustomerId}
           />
         </div>
         <div>
@@ -166,6 +169,7 @@ export default function InvoiceForm({ onSubmit }: InvoiceFormProps) {
             id="clientVAT"
             value={clientVAT || ''}
             onChange={(e) => setClientVAT(e.target.value || undefined)}
+            readOnly={!!selectedCustomerId}
           />
         </div>
       </div>
