@@ -1,36 +1,88 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DijiInvoice
 
-## Getting Started
+A multi-tenant SaaS platform for invoice management built with Next.js, Shadcn/ui, and Firebase.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Multi-tenant SaaS**: Isolated data per organization
+- **Quotes Management**: Create quotes and convert to invoices
+- **Invoice Tracking**: Manage invoices with partial payments
+- **Products & Services**: Catalog management
+- **Offline Support**: PWA with offline capabilities
+- **Firebase Integration**: Auth, Firestore, Storage
+
+## Setup
+
+1. **Firebase Project**:
+   - Create a new Firebase project at https://console.firebase.google.com/
+   - Enable Authentication (Email/Password)
+   - Enable Firestore Database
+   - Enable Storage (optional)
+
+2. **Environment Variables**:
+   - Copy `.env.local` and fill in your Firebase config:
+     ```
+     NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
+     NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+     NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+     NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+     NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+     NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+     ```
+
+3. **Install Dependencies**:
+   ```bash
+   npm install
+   ```
+
+4. **Run Development Server**:
+   ```bash
+   npm run dev
+   ```
+
+5. **Build for Production**:
+   ```bash
+   npm run build
+   npm start
+   ```
+
+## Project Structure
+
+- `src/app/` - Next.js app router pages
+- `src/components/` - Reusable UI components
+- `src/contexts/` - React contexts (Auth)
+- `src/lib/` - Utilities, Firebase config, types
+- `public/` - Static assets
+
+## Database Schema
+
+Data is stored in Firestore with tenant isolation:
+
+```
+/tenants/{tenantId}/
+  - quotes/
+  - invoices/
+  - products/
+  - services/
+  - payments/
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Authentication
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Sign up creates a new tenant
+- Users are scoped to their tenant
+- Firebase Auth handles authentication
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Offline Support
 
-## Learn More
+- Firestore automatically syncs when online
+- PWA manifest for installable app
+- Service worker for caching (to be implemented)
 
-To learn more about Next.js, take a look at the following resources:
+## Next Steps
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Implement invoices UI
+- Add payments tracking
+- Build products/services management
+- Add more auth features (password reset, etc.)
+- Implement proper service worker for offline
