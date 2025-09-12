@@ -57,6 +57,7 @@ export interface Invoice {
   clientName: string;
   clientEmail: string;
   clientAddress?: string;
+  clientVAT?: string;
   items: QuoteItem[];
   subtotal: number;
   taxRate: number;
@@ -65,6 +66,8 @@ export interface Invoice {
   status: 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled';
   dueDate: Date;
   notes?: string;
+  template: 'english' | 'arabic';
+  includeQR: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -79,4 +82,15 @@ export interface Payment {
   reference?: string;
   notes?: string;
   createdAt: Date;
+}
+
+export interface Tenant {
+  id: string;
+  name: string;
+  email: string;
+  address?: string;
+  phone?: string;
+  vatNumber?: string;
+  createdAt: Date;
+  subscriptionStatus: 'active' | 'inactive' | 'trial';
 }
