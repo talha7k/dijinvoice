@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { collection, query, onSnapshot, updateDoc, doc, getDoc } from 'firebase/firestore';
+import { collection, query, onSnapshot, updateDoc, doc, getDoc, addDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useAuth } from '@/contexts/AuthContext';
 import { Invoice, Tenant } from '@/types';
@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Badge } from '@/components/ui/badge';
 import EnglishInvoice from '@/components/templates/EnglishInvoice';
 import ArabicInvoice from '@/components/templates/ArabicInvoice';
+import InvoiceForm from '@/components/InvoiceForm';
 
 export default function InvoicesPage() {
   const { user, tenantId } = useAuth();
@@ -19,6 +20,7 @@ export default function InvoicesPage() {
   const [tenant, setTenant] = useState<Tenant | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
     if (!tenantId) return;
@@ -59,6 +61,18 @@ export default function InvoicesPage() {
     await updateDoc(invoiceRef, { status, updatedAt: new Date() });
   };
 
+  const handleCreateInvoice = async (invoiceData: Omit<Invoice, 'id' | 'tenantId' | 'createdAt' | 'updatedAt'>) => {
+    if (!tenantId) return;
+
+    await addDoc(collection(db, 'tenants', tenantId, 'invoices'), {
+      ...invoiceData,
+      tenantId,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+    setDialogOpen(false);
+  };
+
   if (!user) return <div>Please log in</div>;
   if (loading) return <div>Loading...</div>;
 
@@ -66,6 +80,17 @@ export default function InvoicesPage() {
     <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Invoices</h1>
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogTrigger asChild>
+            <Button>Create Invoice</Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Create New Invoice</DialogTitle>
+            </DialogHeader>
+            <InvoiceForm onSubmit={handleCreateInvoice} />
+          </DialogContent>
+        </Dialog>
       </div>
 
       <Card>
