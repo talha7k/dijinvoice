@@ -144,6 +144,18 @@ export interface Supplier {
   updatedAt: Date;
 }
 
+export interface Customer {
+  id: string;
+  name: string;
+  email: string;
+  address?: string;
+  phone?: string;
+  vatNumber?: string;
+  tenantId: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface PurchaseInvoice {
   id: string;
   tenantId: string;
