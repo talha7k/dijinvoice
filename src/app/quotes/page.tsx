@@ -11,7 +11,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import QuoteForm from '@/components/QuoteForm';
 import { FileText } from 'lucide-react';
-import { AppLayout } from '@/components/layout/AppLayout';
 
 function QuotesContent() {
   const { user, tenantId } = useAuth();
@@ -174,9 +173,5 @@ function QuotesContent() {
 }
 
 export default function QuotesPage() {
-  return (
-    <AppLayout>
-      <QuotesContent />
-    </AppLayout>
-  );
+  return <QuotesContent />;
 }

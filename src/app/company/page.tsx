@@ -12,8 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Building2, CreditCard, User, Mail, Calendar } from 'lucide-react';
-
-export default function CompanyPage() {
+function CompanyContent() {
   const { user, tenantId } = useAuth();
   const [tenant, setTenant] = useState<Tenant | null>(null);
   const [loading, setLoading] = useState(true);
@@ -248,4 +247,8 @@ export default function CompanyPage() {
       </Tabs>
     </div>
   );
+}
+
+export default function CompanyPage() {
+  return <CompanyContent />;
 }

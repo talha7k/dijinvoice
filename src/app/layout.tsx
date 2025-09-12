@@ -3,7 +3,7 @@ import { Geist, Geist_Mono, Amiri } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
-import { CollapsibleSidebar } from "@/components/ui/collapsible-sidebar";
+import { AppLayout } from "@/components/layout/AppLayout";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -41,7 +41,9 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <AuthProvider>
-            {children}
+            <AppLayout>
+              {children}
+            </AppLayout>
           </AuthProvider>
         </ThemeProvider>
       </body>

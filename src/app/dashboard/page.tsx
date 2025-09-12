@@ -11,7 +11,6 @@ import { useRouter } from 'next/navigation';
 import { collection, query, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Quote, Invoice, Payment, Product, Service } from '@/types';
-import { AppLayout } from '@/components/layout/AppLayout';
 
 function DashboardContent() {
   const { user, tenantId } = useAuth();
@@ -145,9 +144,5 @@ function DashboardContent() {
 }
 
 export default function Dashboard() {
-  return (
-    <AppLayout>
-      <DashboardContent />
-    </AppLayout>
-  );
+  return <DashboardContent />;
 }

@@ -14,7 +14,6 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useAuth } from '@/contexts/AuthContext';
 import { InvoiceTemplate, TemplateField, TemplateStyle } from '@/types';
 import { Plus, Edit, Trash2, Copy, Eye } from 'lucide-react';
-import { AppLayout } from '@/components/layout/AppLayout';
 
 const defaultFields: TemplateField[] = [
   {
@@ -472,9 +471,5 @@ function TemplatesContent() {
 }
 
 export default function TemplatesPage() {
-  return (
-    <AppLayout>
-      <TemplatesContent />
-    </AppLayout>
-  );
+  return <TemplatesContent />;
 }

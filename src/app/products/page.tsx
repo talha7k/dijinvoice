@@ -14,8 +14,6 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { Package, Wrench } from 'lucide-react';
-import { AppLayout } from '@/components/layout/AppLayout';
-
 function ProductsContent() {
   const { user, tenantId } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
@@ -206,7 +204,7 @@ function ProductsContent() {
                     <TableRow key={product.id}>
                       <TableCell>{product.name}</TableCell>
                       <TableCell>{product.description}</TableCell>
-                      <TableCell>${product.price.toFixed(2)}</TableCell>
+                      <TableCell>${product.price ? product.price.toFixed(2) : '0.00'}</TableCell>
                       <TableCell>{product.category}</TableCell>
                       <TableCell>
                         <Button
@@ -305,7 +303,7 @@ function ProductsContent() {
                     <TableRow key={service.id}>
                       <TableCell>{service.name}</TableCell>
                       <TableCell>{service.description}</TableCell>
-                      <TableCell>${service.price.toFixed(2)}</TableCell>
+                      <TableCell>${service.price ? service.price.toFixed(2) : '0.00'}</TableCell>
                       <TableCell>{service.category}</TableCell>
                       <TableCell>
                         <Button
@@ -339,9 +337,5 @@ function ProductsContent() {
 }
 
 export default function ProductsPage() {
-  return (
-    <AppLayout>
-      <ProductsContent />
-    </AppLayout>
-  );
+  return <ProductsContent />;
 }

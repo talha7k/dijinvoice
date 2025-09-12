@@ -13,7 +13,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CreditCard } from 'lucide-react';
-import { AppLayout } from '@/components/layout/AppLayout';
 
 function PaymentsContent() {
   const { user, tenantId } = useAuth();
@@ -188,9 +187,5 @@ function PaymentsContent() {
 }
 
 export default function PaymentsPage() {
-  return (
-    <AppLayout>
-      <PaymentsContent />
-    </AppLayout>
-  );
+  return <PaymentsContent />;
 }

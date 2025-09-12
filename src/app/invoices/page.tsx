@@ -17,7 +17,6 @@ import EnglishInvoice from '@/components/templates/EnglishInvoice';
 import ArabicInvoice from '@/components/templates/ArabicInvoice';
 import InvoiceForm from '@/components/InvoiceForm';
 import { Receipt } from 'lucide-react';
-import { AppLayout } from '@/components/layout/AppLayout';
 
 function InvoicesContent() {
   const { user, tenantId } = useAuth();
@@ -551,9 +550,5 @@ function InvoicesContent() {
 }
 
 export default function InvoicesPage() {
-  return (
-    <AppLayout>
-      <InvoicesContent />
-    </AppLayout>
-  );
+  return <InvoicesContent />;
 }
