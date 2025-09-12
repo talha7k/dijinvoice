@@ -84,6 +84,44 @@ export interface Payment {
   createdAt: Date;
 }
 
+export interface TemplateField {
+  id: string;
+  name: string;
+  type: 'text' | 'number' | 'boolean' | 'select' | 'date';
+  label: string;
+  defaultValue?: string | number | boolean;
+  options?: string[]; // for select type
+  required: boolean;
+  visible: boolean;
+}
+
+export interface TemplateStyle {
+  primaryColor: string;
+  secondaryColor: string;
+  backgroundColor: string;
+  textColor: string;
+  fontFamily: string;
+  fontSize: number;
+  logoUrl?: string;
+  showLogo: boolean;
+  showWatermark: boolean;
+  watermarkText?: string;
+}
+
+export interface InvoiceTemplate {
+  id: string;
+  tenantId: string;
+  name: string;
+  description?: string;
+  type: 'english' | 'arabic' | 'custom';
+  isDefault: boolean;
+  fields: TemplateField[];
+  style: TemplateStyle;
+  customCSS?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface Tenant {
   id: string;
   name: string;

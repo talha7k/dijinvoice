@@ -116,38 +116,42 @@ export default function QuoteForm({ onSubmit }: QuoteFormProps) {
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <Label htmlFor="clientName">Client Name</Label>
-          <Input
-            id="clientName"
-            value={clientName}
-            onChange={(e) => setClientName(e.target.value)}
-            required
-            readOnly={!!selectedCustomerId}
-          />
-        </div>
-        <div>
-          <Label htmlFor="clientEmail">Client Email</Label>
-          <Input
-            id="clientEmail"
-            type="email"
-            value={clientEmail}
-            onChange={(e) => setClientEmail(e.target.value)}
-            required
-            readOnly={!!selectedCustomerId}
-          />
-        </div>
-      </div>
-      <div>
-        <Label htmlFor="clientAddress">Client Address</Label>
-        <Input
-          id="clientAddress"
-          value={clientAddress}
-          onChange={(e) => setClientAddress(e.target.value)}
-          readOnly={!!selectedCustomerId}
-        />
-      </div>
+      {selectedCustomerId && (
+        <>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="clientName">Client Name</Label>
+              <Input
+                id="clientName"
+                value={clientName}
+                onChange={(e) => setClientName(e.target.value)}
+                required
+                readOnly
+              />
+            </div>
+            <div>
+              <Label htmlFor="clientEmail">Client Email</Label>
+              <Input
+                id="clientEmail"
+                type="email"
+                value={clientEmail}
+                onChange={(e) => setClientEmail(e.target.value)}
+                required
+                readOnly
+              />
+            </div>
+          </div>
+          <div>
+            <Label htmlFor="clientAddress">Client Address</Label>
+            <Input
+              id="clientAddress"
+              value={clientAddress}
+              onChange={(e) => setClientAddress(e.target.value)}
+              readOnly
+            />
+          </div>
+        </>
+      )}
 
       <div>
         <Label>Items</Label>
