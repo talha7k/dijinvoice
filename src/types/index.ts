@@ -43,7 +43,7 @@ export interface Quote {
   taxRate: number;
   taxAmount: number;
   total: number;
-  status: 'draft' | 'sent' | 'accepted' | 'rejected' | 'converted';
+  status: 'draft' | 'sent' | 'accepted' | 'rejected' | 'expired' | 'converted';
   notes?: string;
   validUntil?: Date;
   createdAt: Date;

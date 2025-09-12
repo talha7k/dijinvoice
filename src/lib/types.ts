@@ -39,7 +39,7 @@ export interface Quote {
   taxRate: number;
   taxAmount: number;
   total: number;
-  status: 'draft' | 'sent' | 'accepted' | 'rejected' | 'expired';
+  status: 'draft' | 'sent' | 'accepted' | 'rejected' | 'expired' | 'converted';
   createdAt: Date;
   updatedAt: Date;
   validUntil?: Date;
