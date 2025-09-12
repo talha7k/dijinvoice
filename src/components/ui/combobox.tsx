@@ -23,51 +23,62 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-type Status = {
+interface ComboboxOption {
   value: string
   label: string
+  description?: string
 }
 
-const statuses: Status[] = [
-  {
-    value: "backlog",
-    label: "Backlog",
-  },
-  {
-    value: "todo",
-    label: "Todo",
-  },
-  {
-    value: "in progress",
-    label: "In Progress",
-  },
-  {
-    value: "done",
-    label: "Done",
-  },
-  {
-    value: "canceled",
-    label: "Canceled",
-  },
-]
+interface ComboboxProps {
+  options: ComboboxOption[]
+  value?: string
+  onValueChange: (value: string) => void
+  placeholder?: string
+  searchPlaceholder?: string
+  emptyMessage?: string
+  buttonWidth?: string
+  disabled?: boolean
+}
 
-export function ComboBoxResponsive() {
+export function Combobox({
+  options,
+  value,
+  onValueChange,
+  placeholder = "Select option...",
+  searchPlaceholder = "Search...",
+  emptyMessage = "No results found.",
+  buttonWidth = "w-[200px]",
+  disabled = false,
+}: ComboboxProps) {
   const [open, setOpen] = React.useState(false)
   const isDesktop = useMediaQuery("(min-width: 768px)")
-  const [selectedStatus, setSelectedStatus] = React.useState<Status | null>(
-    null
-  )
+  const selectedOption = options.find((option) => option.value === value)
 
   if (isDesktop) {
     return (
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button variant="outline" className="w-[150px] justify-start">
-            {selectedStatus ? <>{selectedStatus.label}</> : <>+ Set status</>}
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            className={`${buttonWidth} justify-between ${!selectedOption && "text-muted-foreground"}`}
+            disabled={disabled}
+          >
+            {selectedOption ? selectedOption.label : placeholder}
+            <span className="ml-2">▼</span>
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[200px] p-0" align="start">
-          <StatusList setOpen={setOpen} setSelectedStatus={setSelectedStatus} />
+          <OptionList
+            options={options}
+            onSelect={(selectedValue) => {
+              onValueChange(selectedValue)
+              setOpen(false)
+            }}
+            searchPlaceholder={searchPlaceholder}
+            emptyMessage={emptyMessage}
+          />
         </PopoverContent>
       </Popover>
     )
@@ -76,44 +87,65 @@ export function ComboBoxResponsive() {
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
-        <Button variant="outline" className="w-[150px] justify-start">
-          {selectedStatus ? <>{selectedStatus.label}</> : <>+ Set status</>}
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className={`${buttonWidth} justify-between ${!selectedOption && "text-muted-foreground"}`}
+          disabled={disabled}
+        >
+          {selectedOption ? selectedOption.label : placeholder}
+          <span className="ml-2">▼</span>
         </Button>
       </DrawerTrigger>
       <DrawerContent>
         <div className="mt-4 border-t">
-          <StatusList setOpen={setOpen} setSelectedStatus={setSelectedStatus} />
+          <OptionList
+            options={options}
+            onSelect={(selectedValue) => {
+              onValueChange(selectedValue)
+              setOpen(false)
+            }}
+            searchPlaceholder={searchPlaceholder}
+            emptyMessage={emptyMessage}
+          />
         </div>
       </DrawerContent>
     </Drawer>
   )
 }
 
-function StatusList({
-  setOpen,
-  setSelectedStatus,
+function OptionList({
+  options,
+  onSelect,
+  searchPlaceholder,
+  emptyMessage,
 }: {
-  setOpen: (open: boolean) => void
-  setSelectedStatus: (status: Status | null) => void
+  options: ComboboxOption[]
+  onSelect: (value: string) => void
+  searchPlaceholder: string
+  emptyMessage: string
 }) {
   return (
     <Command>
-      <CommandInput placeholder="Filter status..." />
+      <CommandInput placeholder={searchPlaceholder} />
       <CommandList>
-        <CommandEmpty>No results found.</CommandEmpty>
+        <CommandEmpty>{emptyMessage}</CommandEmpty>
         <CommandGroup>
-          {statuses.map((status) => (
+          {options.map((option) => (
             <CommandItem
-              key={status.value}
-              value={status.value}
-              onSelect={(value) => {
-                setSelectedStatus(
-                  statuses.find((priority) => priority.value === value) || null
-                )
-                setOpen(false)
-              }}
+              key={option.value}
+              value={option.value}
+              onSelect={onSelect}
             >
-              {status.label}
+              <div className="flex flex-col">
+                <span>{option.label}</span>
+                {option.description && (
+                  <span className="text-sm text-muted-foreground">
+                    {option.description}
+                  </span>
+                )}
+              </div>
             </CommandItem>
           ))}
         </CommandGroup>
