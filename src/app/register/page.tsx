@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export default function RegisterPage() {
   const [email, setEmail] = useState('');
@@ -77,9 +78,19 @@ export default function RegisterPage() {
                 required
               />
             </div>
-            {error && <p className="text-red-500">{error}</p>}
+            {error && (
+              <Alert variant="destructive">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
             <Button type="submit" className="w-full">Sign Up</Button>
           </form>
+          <div className="mt-4 text-center">
+            <span className="text-sm text-gray-600">Already have an account? </span>
+            <a href="/login" className="text-sm text-blue-600 hover:underline">
+              Sign in
+            </a>
+          </div>
         </CardContent>
       </Card>
     </div>

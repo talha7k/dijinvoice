@@ -15,9 +15,9 @@ A multi-tenant SaaS platform for invoice management built with Next.js, Shadcn/u
 
 1. **Firebase Project**:
    - Create a new Firebase project at https://console.firebase.google.com/
-   - Enable Authentication (Email/Password)
-   - Enable Firestore Database
-   - Enable Storage (optional)
+   - **Authentication**: Enable Email/Password and Google providers
+   - **Firestore Database**: Enable and deploy the security rules from `firestore.rules`
+   - **Storage**: Enable (optional for file uploads)
 
 2. **Environment Variables**:
    - Copy `.env.local` and fill in your Firebase config:
@@ -30,12 +30,17 @@ A multi-tenant SaaS platform for invoice management built with Next.js, Shadcn/u
      NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
      ```
 
-3. **Install Dependencies**:
+3. **Deploy Firestore Rules**:
+   ```bash
+   firebase deploy --only firestore:rules
+   ```
+
+4. **Install Dependencies**:
    ```bash
    npm install
    ```
 
-4. **Run Development Server**:
+5. **Run Development Server**:
    ```bash
    npm run dev
    ```
@@ -69,9 +74,11 @@ Data is stored in Firestore with tenant isolation:
 
 ## Authentication
 
-- Sign up creates a new tenant
-- Users are scoped to their tenant
-- Firebase Auth handles authentication
+- **Email/Password**: Standard registration and login
+- **Google Sign-In**: One-click authentication with Google
+- **Password Reset**: Email-based password recovery
+- **Multi-tenant**: Each user belongs to their own organization
+- **Auto Tenant Creation**: Google users get automatic tenant setup
 
 ## Offline Support
 
@@ -81,8 +88,9 @@ Data is stored in Firestore with tenant isolation:
 
 ## Next Steps
 
-- Implement invoices UI
-- Add payments tracking
-- Build products/services management
-- Add more auth features (password reset, etc.)
-- Implement proper service worker for offline
+- PDF generation for invoices
+- Email notifications for invoices/quotes
+- Advanced reporting and analytics
+- Subscription management
+- Multi-language support beyond Arabic
+- Advanced user management (team members, roles)
