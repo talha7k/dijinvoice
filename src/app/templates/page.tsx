@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -95,12 +95,7 @@ export default function TemplatesPage() {
     style: defaultStyle,
   });
 
-  useEffect(() => {
-    if (!tenantId) return;
-    fetchTemplates();
-  }, [tenantId]);
-
-  const fetchTemplates = async () => {
+  const fetchTemplates = useCallback(async () => {
     setLoading(true);
     try {
       // Mock data - replace with actual Firestore calls
@@ -136,7 +131,13 @@ export default function TemplatesPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [tenantId]);
+
+  useEffect(() => {
+    if (tenantId) {
+      fetchTemplates();
+    }
+  }, [tenantId, fetchTemplates]);
 
   const handleCreateTemplate = async () => {
     if (!tenantId || !newTemplate.name.trim()) return;
@@ -351,7 +352,7 @@ export default function TemplatesPage() {
                       <AlertDialogHeader>
                         <AlertDialogTitle>Delete Template</AlertDialogTitle>
                         <AlertDialogDescription>
-                          Are you sure you want to delete "{template.name}"? This action cannot be undone.
+                          Are you sure you want to delete &quot;{template.name}&quot;? This action cannot be undone.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
@@ -443,7 +444,7 @@ export default function TemplatesPage() {
           <DialogHeader>
             <DialogTitle>Template Preview</DialogTitle>
             <DialogDescription>
-              Preview of "{previewTemplate?.name}" template
+              Preview of &quot;{previewTemplate?.name}&quot; template
             </DialogDescription>
           </DialogHeader>
           {previewTemplate && (

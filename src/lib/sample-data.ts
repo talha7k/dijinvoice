@@ -161,6 +161,22 @@ export const getProductServiceOptions = (items: ProductService[]) => {
   }))
 }
 
+export const getProductOptions = (items: ProductService[]) => {
+  return items.filter(item => item.type === 'product').map(item => ({
+    value: item.id,
+    label: item.name,
+    description: `$${item.price.toFixed(2)}`
+  }))
+}
+
+export const getServiceOptions = (items: ProductService[]) => {
+  return items.filter(item => item.type === 'service').map(item => ({
+    value: item.id,
+    label: item.name,
+    description: `$${item.price.toFixed(2)}`
+  }))
+}
+
 export const getCustomerById = (customers: Customer[], id: string) => {
   return customers.find(customer => customer.id === id)
 }

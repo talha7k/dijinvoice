@@ -5,13 +5,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Combobox } from '@/components/ui/combobox';
+import ItemList from '@/components/ItemList';
+import ClientInfo from '@/components/ClientInfo';
 import { Quote, QuoteItem } from '@/types';
 import {
-  sampleCustomers,
   sampleProductsServices,
-  getCustomerOptions,
-  getProductServiceOptions,
-  getCustomerById,
+  getProductOptions,
+  getServiceOptions,
   getProductServiceById
 } from '@/lib/sample-data';
 
@@ -28,16 +28,6 @@ export default function QuoteForm({ onSubmit }: QuoteFormProps) {
   const [taxRate, setTaxRate] = useState(0);
   const [notes, setNotes] = useState('');
 
-  // Handle customer selection
-  const handleCustomerSelect = (customerId: string) => {
-    setSelectedCustomerId(customerId);
-    const customer = getCustomerById(sampleCustomers, customerId);
-    if (customer) {
-      setClientName(customer.name);
-      setClientEmail(customer.email);
-      setClientAddress(customer.address || '');
-    }
-  };
 
   const addItem = () => {
     setItems([...items, {
@@ -103,112 +93,55 @@ export default function QuoteForm({ onSubmit }: QuoteFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <Label>Select Customer</Label>
-        <Combobox
-          options={getCustomerOptions(sampleCustomers)}
-          value={selectedCustomerId}
-          onValueChange={handleCustomerSelect}
-          placeholder="Choose a customer..."
-          searchPlaceholder="Search customers..."
-          emptyMessage="No customers found."
-          buttonWidth="w-full"
-        />
-      </div>
-
-      {selectedCustomerId && (
-        <>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="clientName">Client Name</Label>
-              <Input
-                id="clientName"
-                value={clientName}
-                onChange={(e) => setClientName(e.target.value)}
-                required
-                readOnly
-              />
-            </div>
-            <div>
-              <Label htmlFor="clientEmail">Client Email</Label>
-              <Input
-                id="clientEmail"
-                type="email"
-                value={clientEmail}
-                onChange={(e) => setClientEmail(e.target.value)}
-                required
-                readOnly
-              />
-            </div>
-          </div>
-          <div>
-            <Label htmlFor="clientAddress">Client Address</Label>
-            <Input
-              id="clientAddress"
-              value={clientAddress}
-              onChange={(e) => setClientAddress(e.target.value)}
-              readOnly
-            />
-          </div>
-        </>
-      )}
+      <ClientInfo
+        selectedCustomerId={selectedCustomerId}
+        clientName={clientName}
+        clientEmail={clientEmail}
+        clientAddress={clientAddress}
+        onCustomerSelect={setSelectedCustomerId}
+        onClientNameChange={setClientName}
+        onClientEmailChange={setClientEmail}
+        onClientAddressChange={setClientAddress}
+      />
 
       <div>
         <Label>Items</Label>
 
         {/* Add item from catalog */}
-        <div className="mb-4">
+        <div className="mb-4 space-y-2">
           <Label className="text-sm text-muted-foreground">Add from catalog:</Label>
-          <Combobox
-            options={getProductServiceOptions(sampleProductsServices)}
-            value=""
-            onValueChange={(value) => {
-              addItemFromCatalog(value);
-            }}
-            placeholder="Select product or service..."
-            searchPlaceholder="Search products and services..."
-            emptyMessage="No items found."
-            buttonWidth="w-full"
-          />
+          <div className="grid grid-cols-2 gap-2">
+            <Combobox
+              options={getProductOptions(sampleProductsServices)}
+              value=""
+              onValueChange={(value) => {
+                addItemFromCatalog(value);
+              }}
+              placeholder="Select product..."
+              searchPlaceholder="Search products..."
+              emptyMessage="No products found."
+              buttonWidth="w-full"
+            />
+            <Combobox
+              options={getServiceOptions(sampleProductsServices)}
+              value=""
+              onValueChange={(value) => {
+                addItemFromCatalog(value);
+              }}
+              placeholder="Select service..."
+              searchPlaceholder="Search services..."
+              emptyMessage="No services found."
+              buttonWidth="w-full"
+            />
+          </div>
         </div>
 
-        {items.map((item, index) => (
-          <div key={item.id} className="border p-4 mb-2 rounded">
-            <div className="grid grid-cols-2 gap-2 mb-2">
-              <Input
-                placeholder="Name"
-                value={item.name}
-                onChange={(e) => updateItem(index, 'name', e.target.value)}
-              />
-              <Input
-                placeholder="Description"
-                value={item.description}
-                onChange={(e) => updateItem(index, 'description', e.target.value)}
-              />
-            </div>
-            <div className="grid grid-cols-3 gap-2">
-              <Input
-                type="number"
-                placeholder="Quantity"
-                value={item.quantity}
-                onChange={(e) => updateItem(index, 'quantity', parseInt(e.target.value) || 0)}
-              />
-              <Input
-                type="number"
-                step="0.01"
-                placeholder="Unit Price"
-                value={item.unitPrice}
-                onChange={(e) => updateItem(index, 'unitPrice', parseFloat(e.target.value) || 0)}
-              />
-              <div className="flex items-center">
-                <span className="text-sm font-medium">Total: ${item.total.toFixed(2)}</span>
-              </div>
-            </div>
-            <Button type="button" variant="destructive" onClick={() => removeItem(index)} className="mt-2">
-              Remove
-            </Button>
-          </div>
-        ))}
+        <ItemList
+          items={items}
+          mode="editable"
+          onUpdate={updateItem}
+          onRemove={removeItem}
+        />
         <Button type="button" onClick={addItem} className="mt-2">Add Custom Item</Button>
       </div>
 
