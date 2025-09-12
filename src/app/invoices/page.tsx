@@ -10,6 +10,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { Printer } from 'lucide-react';
 import EnglishInvoice from '@/components/templates/EnglishInvoice';
 import ArabicInvoice from '@/components/templates/ArabicInvoice';
 import InvoiceForm from '@/components/InvoiceForm';
@@ -150,7 +153,7 @@ export default function InvoicesPage() {
                           </DialogHeader>
                           {selectedInvoice && tenant && (
                             <div>
-                              <div className="flex gap-4 mb-4">
+                              <div className="flex gap-4 mb-4 items-center">
                                 <Button
                                   variant={selectedInvoice.template === 'english' ? 'default' : 'outline'}
                                   onClick={() => {
@@ -175,18 +178,24 @@ export default function InvoicesPage() {
                                 >
                                   Arabic Template
                                 </Button>
-                                <Button
-                                  variant={selectedInvoice.includeQR ? 'default' : 'outline'}
-                                  onClick={() => {
-                                    const updatedInvoice = { ...selectedInvoice, includeQR: !selectedInvoice.includeQR };
-                                    setSelectedInvoice(updatedInvoice);
-                                    updateDoc(doc(db, 'tenants', tenantId!, 'invoices', selectedInvoice.id), {
-                                      includeQR: !selectedInvoice.includeQR
-                                    });
-                                  }}
-                                >
-                                  {selectedInvoice.includeQR ? 'Hide' : 'Show'} ZATCA QR
+                                <Button variant="outline" onClick={() => window.print()}>
+                                  <Printer className="h-4 w-4 mr-2" />
+                                  Print
                                 </Button>
+                                <div className="flex items-center gap-2">
+                                  <Label htmlFor="qr-toggle">Show ZATCA QR</Label>
+                                  <Switch
+                                    id="qr-toggle"
+                                    checked={selectedInvoice.includeQR}
+                                    onCheckedChange={(checked) => {
+                                      const updatedInvoice = { ...selectedInvoice, includeQR: checked };
+                                      setSelectedInvoice(updatedInvoice);
+                                      updateDoc(doc(db, 'tenants', tenantId!, 'invoices', selectedInvoice.id), {
+                                        includeQR: checked
+                                      });
+                                    }}
+                                  />
+                                </div>
                               </div>
                               {selectedInvoice.template === 'arabic' ? (
                                 <ArabicInvoice invoice={selectedInvoice} tenant={tenant} />

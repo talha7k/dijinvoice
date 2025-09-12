@@ -26,7 +26,7 @@ export default function Dashboard() {
 
   const handleLogout = async () => {
     await signOut(auth);
-    router.push('/');
+    router.push('/login');
   };
 
   useEffect(() => {
@@ -126,17 +126,20 @@ export default function Dashboard() {
           </Card>
         </Link>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Products & Services</CardTitle>
-            <CardDescription>Manage your catalog</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button asChild className="w-full">
-              <Link href="/products">View Catalog</Link>
-            </Button>
-          </CardContent>
-        </Card>
+        <Link href="/products">
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <CardTitle>Products & Services</CardTitle>
+              <CardDescription>Total Items</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{analytics.products.count + analytics.services.count}</div>
+              <p className="text-sm text-muted-foreground">
+                {analytics.products.count} products • {analytics.services.count} services
+              </p>
+            </CardContent>
+          </Card>
+        </Link>
       </div>
     </div>
   );

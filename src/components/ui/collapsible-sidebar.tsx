@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -77,12 +77,14 @@ const navigationItems = [
 export function CollapsibleSidebar({ className }: SidebarProps) {
   const [isCollapsed, setIsCollapsed] = React.useState(false)
   const pathname = usePathname()
+  const router = useRouter()
   const { theme, toggleTheme } = useTheme()
   const { user, tenantId } = useAuth()
 
   const handleLogout = async () => {
     try {
       await auth.signOut()
+      router.push('/login')
     } catch (error) {
       console.error('Error signing out:', error)
     }
@@ -117,10 +119,10 @@ export function CollapsibleSidebar({ className }: SidebarProps) {
                 {theme === 'light' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
               </Button>
               <Button
-                variant="ghost"
+                variant="outline"
                 size="sm"
                 onClick={() => setIsCollapsed(!isCollapsed)}
-                className="h-8 w-8 p-0"
+                className="h-8 w-8 p-0 bg-input hover:bg-primary"
               >
                 {isCollapsed ? (
                   <ChevronRight className="h-4 w-4" />
@@ -154,6 +156,60 @@ export function CollapsibleSidebar({ className }: SidebarProps) {
               })}
             </nav>
           </ScrollArea>
+
+          {/* Profile Footer */}
+          {user && (
+            <div className="border-t p-4">
+              {!isCollapsed ? (
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                      <span className="text-primary-foreground text-sm font-medium">
+                        {user.email?.charAt(0).toUpperCase() || 'U'}
+                      </span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">
+                        {user.displayName || user.email?.split('@')[0] || 'User'}
+                      </p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {user.email}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-muted-foreground">
+                      Company: {tenantId?.substring(0, 8)}...
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleLogout}
+                      className="h-8 w-8 p-0"
+                    >
+                      <LogOut className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center space-y-2">
+                  <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                    <span className="text-primary-foreground text-sm font-medium">
+                      {user.email?.charAt(0).toUpperCase() || 'U'}
+                    </span>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleLogout}
+                    className="h-8 w-8 p-0"
+                  >
+                    <LogOut className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
@@ -208,6 +264,42 @@ export function CollapsibleSidebar({ className }: SidebarProps) {
                 })}
               </nav>
             </ScrollArea>
+
+            {/* Profile Footer */}
+            {user && (
+              <div className="border-t p-4">
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                      <span className="text-primary-foreground text-sm font-medium">
+                        {user.email?.charAt(0).toUpperCase() || 'U'}
+                      </span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">
+                        {user.displayName || user.email?.split('@')[0] || 'User'}
+                      </p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {user.email}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-muted-foreground">
+                      Company: {tenantId?.substring(0, 8)}...
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleLogout}
+                      className="h-8 w-8 p-0"
+                    >
+                      <LogOut className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </SheetContent>
       </Sheet>
