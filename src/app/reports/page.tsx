@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -9,9 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Download, FileText, TrendingUp, Calculator } from 'lucide-react';
+import { Calendar, Download, TrendingUp, Calculator } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { collection, getDocs, query, where, Timestamp } from 'firebase/firestore';
+import { collection, getDocs, query, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
 interface InvoiceItem {
@@ -57,19 +57,7 @@ export default function ReportsPage() {
   });
   const [reportType, setReportType] = useState('monthly');
 
-  useEffect(() => {
-    if (tenantId) {
-      fetchInvoices();
-    }
-  }, [tenantId]);
-
-  useEffect(() => {
-    if (invoices.length > 0) {
-      calculateReportData();
-    }
-  }, [invoices, dateRange, reportType]);
-
-  const fetchInvoices = async () => {
+  const fetchInvoices = useCallback(async () => {
     if (!tenantId) return;
     
     setLoading(true);
@@ -111,9 +99,9 @@ export default function ReportsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [tenantId]);
 
-  const calculateReportData = () => {
+  const calculateReportData = useCallback(() => {
     const startDate = new Date(dateRange.startDate);
     const endDate = new Date(dateRange.endDate);
     endDate.setHours(23, 59, 59, 999); // Include end date
@@ -154,7 +142,19 @@ export default function ReportsPage() {
       netProfit,
       profitMargin
     });
-  };
+  }, [invoices, dateRange]);
+
+  useEffect(() => {
+    if (tenantId) {
+      fetchInvoices();
+    }
+  }, [tenantId, fetchInvoices]);
+
+  useEffect(() => {
+    if (invoices.length > 0) {
+      calculateReportData();
+    }
+  }, [invoices, dateRange, reportType, calculateReportData]);
 
   const handleDateRangeChange = (field: 'startDate' | 'endDate', value: string) => {
     setDateRange(prev => ({
@@ -506,31 +506,30 @@ export default function ReportsPage() {
 
                   <Card>
                     <CardHeader>
-                      <CardTitle>Supporting Documents</CardTitle>
-                      <CardDescription>
-                        Summary of invoices included in this VAT report
-                      </CardDescription>
+                      <CardTitle>VAT Submission Information</CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <h3 className="text-lg font-semibold">Sales Invoices</h3>
-                          <p className="text-sm text-muted-foreground">
-                            Total: {invoices.filter(inv => inv.type === 'sales').length} invoices
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            Total Value: SAR {reportData.totalSales.toFixed(2)}
+                        <div>
+                          <p className="text-sm text-gray-600">Reporting Period</p>
+                          <p className="font-medium">{dateRange.startDate} to {dateRange.endDate}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-600">Filing Deadline</p>
+                          <p className="font-medium">
+                            {reportType === 'monthly' 
+                              ? 'Last day of following month' 
+                              : reportType === 'quarterly' 
+                                ? 'Last day of month following quarter end' 
+                                : 'Last day of month following year end'}
                           </p>
                         </div>
-                        <div className="space-y-2">
-                          <h3 className="text-lg font-semibold">Purchase Invoices</h3>
-                          <p className="text-sm text-muted-foreground">
-                            Total: {invoices.filter(inv => inv.type === 'purchase').length} invoices
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            Total Value: SAR {reportData.totalPurchases.toFixed(2)}
-                          </p>
-                        </div>
+                      </div>
+                      <div className="mt-4">
+                        <p className="text-sm text-gray-600">Notes</p>
+                        <p className="text-sm">
+                          This report is generated for tax filing purposes. Please ensure all invoices are accurate and up-to-date before submission.
+                        </p>
                       </div>
                     </CardContent>
                   </Card>

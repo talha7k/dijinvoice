@@ -11,7 +11,7 @@ interface AppLayoutProps {
 
 export function AppLayout({ children }: AppLayoutProps) {
   const pathname = usePathname();
-  const { user, loading } = useAuth();
+  const { loading } = useAuth();
 
   const isPublicRoute = pathname === '/login' || pathname === '/register';
 
