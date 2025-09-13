@@ -14,6 +14,13 @@ export default function EnglishInvoice({ invoice, tenant }: EnglishInvoiceProps)
       {/* Header */}
       <div className="flex justify-between items-start mb-8">
         <div>
+          {/* QR Code - positioned above invoice number */}
+          {invoice.includeQR && tenant.vatNumber && (
+            <div className="mb-4">
+              <ZatcaQR invoice={invoice} tenant={tenant} />
+              <p className="text-sm text-gray-600 mt-2">ZATCA Compliant QR Code</p>
+            </div>
+          )}
           <h1 className="text-3xl font-bold text-gray-800">INVOICE</h1>
           <p className="text-gray-600">Invoice #{invoice.id.slice(-8)}</p>
         </div>
@@ -106,15 +113,6 @@ export default function EnglishInvoice({ invoice, tenant }: EnglishInvoiceProps)
         </div>
       )}
 
-      {/* QR Code */}
-      {invoice.includeQR && tenant.vatNumber && (
-        <div className="flex justify-end">
-          <div className="text-center">
-            <p className="text-sm text-gray-600 mb-2">ZATCA Compliant QR Code</p>
-            <ZatcaQR invoice={invoice} tenant={tenant} />
-          </div>
-        </div>
-      )}
     </div>
   );
 }

@@ -14,6 +14,13 @@ export default function ArabicInvoice({ invoice, tenant }: ArabicInvoiceProps) {
       {/* Header */}
       <div className="flex justify-between items-start mb-8 flex-row-reverse">
         <div className="text-right">
+          {/* QR Code - positioned above invoice number */}
+          {invoice.includeQR && tenant.vatNumber && (
+            <div className="mb-4">
+              <ZatcaQR invoice={invoice} tenant={tenant} />
+              <p className="text-sm text-gray-600 mt-2">رمز QR متوافق مع زاتكا</p>
+            </div>
+          )}
           <h1 className="text-3xl font-bold text-gray-800">فاتورة</h1>
           <p className="text-gray-600">رقم الفاتورة #{invoice.id.slice(-8)}</p>
         </div>
@@ -106,15 +113,6 @@ export default function ArabicInvoice({ invoice, tenant }: ArabicInvoiceProps) {
         </div>
       )}
 
-      {/* QR Code */}
-      {invoice.includeQR && tenant.vatNumber && (
-        <div className="flex justify-start">
-          <div className="text-center">
-            <p className="text-sm text-gray-600 mb-2">رمز QR متوافق مع زاتكا</p>
-            <ZatcaQR invoice={invoice} tenant={tenant} />
-          </div>
-        </div>
-      )}
     </div>
   );
 }
