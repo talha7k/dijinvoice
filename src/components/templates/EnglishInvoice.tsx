@@ -1,14 +1,16 @@
 'use client';
 
-import { Invoice, Tenant } from '@/types';
+import { Invoice, Tenant, Customer, Supplier } from '@/types';
 import ZatcaQR from '@/components/ZatcaQR';
 
 interface EnglishInvoiceProps {
   invoice: Invoice;
   tenant: Tenant;
+  customer?: Customer; // Customer data if available
+  supplier?: Supplier; // Supplier data if available
 }
 
-export default function EnglishInvoice({ invoice, tenant }: EnglishInvoiceProps) {
+export default function EnglishInvoice({ invoice, tenant, customer, supplier }: EnglishInvoiceProps) {
   return (
     <div className="max-w-4xl mx-auto bg-white p-8 shadow-lg print-content">
       {/* Header */}
@@ -25,7 +27,20 @@ export default function EnglishInvoice({ invoice, tenant }: EnglishInvoiceProps)
           <p className="text-gray-600">Invoice #{invoice.id.slice(-8)}</p>
         </div>
         <div className="text-right">
+          {/* Company Logo */}
+          {tenant.logoUrl && (
+            <div className="mb-4">
+              <img 
+                src={tenant.logoUrl} 
+                alt="Company Logo" 
+                className="max-h-20 object-contain ml-auto"
+              />
+            </div>
+          )}
           <h2 className="text-xl font-semibold">{tenant.name}</h2>
+          {tenant.nameAr && (
+            <p className="text-lg">{tenant.nameAr}</p>
+          )}
           <p>{tenant.address}</p>
           <p>{tenant.email}</p>
           <p>{tenant.phone}</p>
@@ -37,10 +52,43 @@ export default function EnglishInvoice({ invoice, tenant }: EnglishInvoiceProps)
       <div className="grid grid-cols-2 gap-8 mb-8">
         <div>
           <h3 className="font-semibold mb-2">Bill To:</h3>
+          {/* Customer Logo */}
+          {customer?.logoUrl && (
+            <div className="mb-2">
+              <img 
+                src={customer.logoUrl} 
+                alt="Customer Logo" 
+                className="max-h-16 object-contain"
+              />
+            </div>
+          )}
           <p className="font-medium">{invoice.clientName}</p>
+          {customer?.nameAr && (
+            <p className="text-md">{customer.nameAr}</p>
+          )}
           <p>{invoice.clientAddress}</p>
           <p>{invoice.clientEmail}</p>
           {invoice.clientVAT && <p>VAT: {invoice.clientVAT}</p>}
+        </div>
+        <div>
+          <h3 className="font-semibold mb-2">Supplier:</h3>
+          {/* Supplier Logo */}
+          {supplier?.logoUrl && (
+            <div className="mb-2">
+              <img 
+                src={supplier.logoUrl} 
+                alt="Supplier Logo" 
+                className="max-h-16 object-contain"
+              />
+            </div>
+          )}
+          <p className="font-medium">{supplier?.name || 'N/A'}</p>
+          {supplier?.nameAr && (
+            <p className="text-md">{supplier.nameAr}</p>
+          )}
+          <p>{supplier?.address || 'N/A'}</p>
+          <p>{supplier?.email || 'N/A'}</p>
+          {supplier?.vatNumber && <p>VAT: {supplier.vatNumber}</p>}
         </div>
         <div>
           <div className="grid grid-cols-2 gap-4">
@@ -113,6 +161,19 @@ export default function EnglishInvoice({ invoice, tenant }: EnglishInvoiceProps)
         </div>
       )}
 
+      {/* Company Stamp */}
+      {tenant.stampUrl && (
+        <div className="flex justify-end mt-8">
+          <div className="text-center">
+            <img 
+              src={tenant.stampUrl} 
+              alt="Company Stamp" 
+              className="max-h-32 object-contain"
+            />
+            <p className="text-sm text-gray-600 mt-2">Company Stamp</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

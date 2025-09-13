@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { db, storage } from '@/lib/firebase';
 import { useAuth } from '@/contexts/AuthContext';
 import { Tenant } from '@/types';
 import { Button } from '@/components/ui/button';
@@ -11,19 +11,26 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Building2, CreditCard, User, Mail, Calendar } from 'lucide-react';
+import { Building2, CreditCard, User, Mail, Calendar, Upload, X } from 'lucide-react';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+
 function CompanyContent() {
   const { user, tenantId } = useAuth();
   const [tenant, setTenant] = useState<Tenant | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [uploadingStamp, setUploadingStamp] = useState(false);
 
   // Form state
   const [companyName, setCompanyName] = useState('');
+  const [companyNameAr, setCompanyNameAr] = useState('');
   const [companyEmail, setCompanyEmail] = useState('');
   const [companyAddress, setCompanyAddress] = useState('');
   const [companyPhone, setCompanyPhone] = useState('');
   const [vatNumber, setVatNumber] = useState('');
+  const [logoUrl, setLogoUrl] = useState('');
+  const [stampUrl, setStampUrl] = useState('');
 
   useEffect(() => {
     if (!tenantId) return;
@@ -39,16 +46,111 @@ function CompanyContent() {
 
         setTenant(tenantData);
         setCompanyName(tenantData.name || '');
+        setCompanyNameAr(tenantData.nameAr || '');
         setCompanyEmail(tenantData.email || '');
         setCompanyAddress(tenantData.address || '');
         setCompanyPhone(tenantData.phone || '');
         setVatNumber(tenantData.vatNumber || '');
+        setLogoUrl(tenantData.logoUrl || '');
+        setStampUrl(tenantData.stampUrl || '');
       }
       setLoading(false);
     };
 
     fetchTenant();
   }, [tenantId]);
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || !e.target.files[0] || !tenantId) return;
+    
+    const file = e.target.files[0];
+    setUploadingLogo(true);
+    
+    try {
+      const storageRef = ref(storage, `tenants/${tenantId}/logo`);
+      await uploadBytes(storageRef, file);
+      const downloadUrl = await getDownloadURL(storageRef);
+      
+      setLogoUrl(downloadUrl);
+      
+      // Update tenant document
+      await updateDoc(doc(db, 'tenants', tenantId), {
+        logoUrl: downloadUrl,
+        updatedAt: new Date(),
+      });
+      
+      // Update local state
+      setTenant(prev => prev ? { ...prev, logoUrl: downloadUrl } : null);
+    } catch (error) {
+      console.error('Error uploading logo:', error);
+      alert('Failed to upload logo.');
+    } finally {
+      setUploadingLogo(false);
+    }
+  };
+
+  const handleStampUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || !e.target.files[0] || !tenantId) return;
+    
+    const file = e.target.files[0];
+    setUploadingStamp(true);
+    
+    try {
+      const storageRef = ref(storage, `tenants/${tenantId}/stamp`);
+      await uploadBytes(storageRef, file);
+      const downloadUrl = await getDownloadURL(storageRef);
+      
+      setStampUrl(downloadUrl);
+      
+      // Update tenant document
+      await updateDoc(doc(db, 'tenants', tenantId), {
+        stampUrl: downloadUrl,
+        updatedAt: new Date(),
+      });
+      
+      // Update local state
+      setTenant(prev => prev ? { ...prev, stampUrl: downloadUrl } : null);
+    } catch (error) {
+      console.error('Error uploading stamp:', error);
+      alert('Failed to upload stamp.');
+    } finally {
+      setUploadingStamp(false);
+    }
+  };
+
+  const handleRemoveLogo = async () => {
+    if (!tenantId) return;
+    
+    try {
+      await updateDoc(doc(db, 'tenants', tenantId), {
+        logoUrl: '',
+        updatedAt: new Date(),
+      });
+      
+      setLogoUrl('');
+      setTenant(prev => prev ? { ...prev, logoUrl: '' } : null);
+    } catch (error) {
+      console.error('Error removing logo:', error);
+      alert('Failed to remove logo.');
+    }
+  };
+
+  const handleRemoveStamp = async () => {
+    if (!tenantId) return;
+    
+    try {
+      await updateDoc(doc(db, 'tenants', tenantId), {
+        stampUrl: '',
+        updatedAt: new Date(),
+      });
+      
+      setStampUrl('');
+      setTenant(prev => prev ? { ...prev, stampUrl: '' } : null);
+    } catch (error) {
+      console.error('Error removing stamp:', error);
+      alert('Failed to remove stamp.');
+    }
+  };
 
   const handleSaveCompanyInfo = async () => {
     if (!tenantId) return;
@@ -57,10 +159,13 @@ function CompanyContent() {
     try {
       await updateDoc(doc(db, 'tenants', tenantId), {
         name: companyName,
+        nameAr: companyNameAr,
         email: companyEmail,
         address: companyAddress,
         phone: companyPhone,
         vatNumber: vatNumber,
+        logoUrl: logoUrl,
+        stampUrl: stampUrl,
         updatedAt: new Date(),
       });
 
@@ -68,10 +173,13 @@ function CompanyContent() {
       setTenant(prev => prev ? {
         ...prev,
         name: companyName,
+        nameAr: companyNameAr,
         email: companyEmail,
         address: companyAddress,
         phone: companyPhone,
         vatNumber: vatNumber,
+        logoUrl: logoUrl,
+        stampUrl: stampUrl,
       } : null);
 
       alert('Company information updated successfully!');
@@ -96,7 +204,7 @@ function CompanyContent() {
       <Tabs defaultValue="company" className="space-y-6">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="company">Company Info</TabsTrigger>
-          <TabsTrigger value="subscription">Subscription</TabsTrigger>
+          <TabsTrigger value="branding">Branding</TabsTrigger>
           <TabsTrigger value="account">Account Details</TabsTrigger>
         </TabsList>
 
@@ -108,24 +216,35 @@ function CompanyContent() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="companyName">Company Name</Label>
+                  <Label htmlFor="companyName">Company Name (English)</Label>
                   <Input
                     id="companyName"
                     value={companyName}
                     onChange={(e) => setCompanyName(e.target.value)}
-                    placeholder="Enter company name"
+                    placeholder="Enter company name in English"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="companyEmail">Company Email</Label>
+                  <Label htmlFor="companyNameAr">Company Name (Arabic)</Label>
                   <Input
-                    id="companyEmail"
-                    type="email"
-                    value={companyEmail}
-                    onChange={(e) => setCompanyEmail(e.target.value)}
-                    placeholder="Enter company email"
+                    id="companyNameAr"
+                    value={companyNameAr}
+                    onChange={(e) => setCompanyNameAr(e.target.value)}
+                    placeholder="Enter company name in Arabic"
+                    dir="rtl"
                   />
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="companyEmail">Company Email</Label>
+                <Input
+                  id="companyEmail"
+                  type="email"
+                  value={companyEmail}
+                  onChange={(e) => setCompanyEmail(e.target.value)}
+                  placeholder="Enter company email"
+                />
               </div>
 
               <div className="space-y-2">
@@ -156,6 +275,109 @@ function CompanyContent() {
                     onChange={(e) => setVatNumber(e.target.value)}
                     placeholder="Enter VAT number"
                   />
+                </div>
+              </div>
+
+              <Button onClick={handleSaveCompanyInfo} disabled={saving}>
+                {saving ? 'Saving...' : 'Save Changes'}
+              </Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="branding" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Company Branding</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-4">
+                <Label>Company Logo</Label>
+                <div className="flex items-center space-x-4">
+                  {logoUrl ? (
+                    <div className="relative">
+                      <img 
+                        src={logoUrl} 
+                        alt="Company Logo" 
+                        className="w-24 h-24 object-contain border rounded"
+                      />
+                      <Button 
+                        variant="destructive" 
+                        size="icon" 
+                        className="absolute -top-2 -right-2 h-6 w-6"
+                        onClick={handleRemoveLogo}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="w-24 h-24 border-2 border-dashed border-gray-300 rounded flex items-center justify-center">
+                      <span className="text-gray-400 text-xs">No Logo</span>
+                    </div>
+                  )}
+                  <div>
+                    <Label htmlFor="logo-upload" className="cursor-pointer">
+                      <Button variant="outline" disabled={uploadingLogo}>
+                        <Upload className="h-4 w-4 mr-2" />
+                        {uploadingLogo ? 'Uploading...' : 'Upload Logo'}
+                      </Button>
+                    </Label>
+                    <Input
+                      id="logo-upload"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleLogoUpload}
+                    />
+                    <p className="text-sm text-gray-500 mt-2">
+                      Recommended: Square image, max 2MB
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <Label>Company Stamp</Label>
+                <div className="flex items-center space-x-4">
+                  {stampUrl ? (
+                    <div className="relative">
+                      <img 
+                        src={stampUrl} 
+                        alt="Company Stamp" 
+                        className="w-24 h-24 object-contain border rounded"
+                      />
+                      <Button 
+                        variant="destructive" 
+                        size="icon" 
+                        className="absolute -top-2 -right-2 h-6 w-6"
+                        onClick={handleRemoveStamp}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="w-24 h-24 border-2 border-dashed border-gray-300 rounded flex items-center justify-center">
+                      <span className="text-gray-400 text-xs">No Stamp</span>
+                    </div>
+                  )}
+                  <div>
+                    <Label htmlFor="stamp-upload" className="cursor-pointer">
+                      <Button variant="outline" disabled={uploadingStamp}>
+                        <Upload className="h-4 w-4 mr-2" />
+                        {uploadingStamp ? 'Uploading...' : 'Upload Stamp'}
+                      </Button>
+                    </Label>
+                    <Input
+                      id="stamp-upload"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleStampUpload}
+                    />
+                    <p className="text-sm text-gray-500 mt-2">
+                      Recommended: Transparent PNG, max 2MB
+                    </p>
+                  </div>
                 </div>
               </div>
 

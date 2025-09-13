@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { collection, query, onSnapshot, updateDoc, doc, getDoc, addDoc } from 'firebase/firestore';
+import { collection, query, onSnapshot, updateDoc, doc, getDoc, addDoc, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useAuth } from '@/contexts/AuthContext';
-import { Invoice, Tenant } from '@/types';
+import { Invoice, Tenant, Customer, Supplier } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -22,6 +22,8 @@ function InvoicesContent() {
   const { user, tenantId } = useAuth();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [tenant, setTenant] = useState<Tenant | null>(null);
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -41,6 +43,32 @@ function InvoicesContent() {
       }
     };
     fetchTenant();
+
+    // Fetch customers
+    const fetchCustomers = async () => {
+      const customersSnapshot = await getDocs(collection(db, 'tenants', tenantId, 'customers'));
+      const customersData = customersSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        createdAt: doc.data().createdAt?.toDate(),
+        updatedAt: doc.data().updatedAt?.toDate(),
+      })) as Customer[];
+      setCustomers(customersData);
+    };
+    fetchCustomers();
+
+    // Fetch suppliers
+    const fetchSuppliers = async () => {
+      const suppliersSnapshot = await getDocs(collection(db, 'tenants', tenantId, 'suppliers'));
+      const suppliersData = suppliersSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        createdAt: doc.data().createdAt?.toDate(),
+        updatedAt: doc.data().updatedAt?.toDate(),
+      })) as Supplier[];
+      setSuppliers(suppliersData);
+    };
+    fetchSuppliers();
 
     const q = query(collection(db, 'tenants', tenantId, 'invoices'));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -180,6 +208,10 @@ function InvoicesContent() {
   };
 
   const createEnglishInvoiceHTML = (invoice: Invoice, tenantData: Tenant) => {
+    // Find customer and supplier if available
+    const customer = customers.find(c => c.name === invoice.clientName);
+    const supplier = suppliers.find(s => s.id === invoice.supplierId);
+    
     return `
       <div class="invoice-container">
         <div class="flex justify-between items-start mb-8">
@@ -188,7 +220,9 @@ function InvoicesContent() {
             <p class="text-gray-600">Invoice #${invoice.id.slice(-8)}</p>
           </div>
           <div class="text-right">
+            ${tenantData.logoUrl ? `<img src="${tenantData.logoUrl}" alt="Company Logo" class="max-h-20 object-contain ml-auto mb-4">` : ''}
             <h2 class="text-xl font-semibold">${tenantData.name}</h2>
+            ${tenantData.nameAr ? `<p class="text-lg">${tenantData.nameAr}</p>` : ''}
             <p>${tenantData.address}</p>
             <p>${tenantData.email}</p>
             <p>${tenantData.phone}</p>
@@ -199,10 +233,21 @@ function InvoicesContent() {
         <div class="grid grid-cols-2 gap-8 mb-8">
           <div>
             <h3 class="font-semibold mb-2">Bill To:</h3>
+            ${customer?.logoUrl ? `<img src="${customer.logoUrl}" alt="Customer Logo" class="max-h-16 object-contain mb-2">` : ''}
             <p class="font-medium">${invoice.clientName}</p>
+            ${customer?.nameAr ? `<p class="text-md">${customer.nameAr}</p>` : ''}
             <p>${invoice.clientAddress}</p>
             <p>${invoice.clientEmail}</p>
             ${invoice.clientVAT ? `<p>VAT: ${invoice.clientVAT}</p>` : ''}
+          </div>
+          <div>
+            <h3 class="font-semibold mb-2">Supplier:</h3>
+            ${supplier?.logoUrl ? `<img src="${supplier.logoUrl}" alt="Supplier Logo" class="max-h-16 object-contain mb-2">` : ''}
+            <p class="font-medium">${supplier?.name || 'N/A'}</p>
+            ${supplier?.nameAr ? `<p class="text-md">${supplier.nameAr}</p>` : ''}
+            <p>${supplier?.address || 'N/A'}</p>
+            <p>${supplier?.email || 'N/A'}</p>
+            ${supplier?.vatNumber ? `<p>VAT: ${supplier.vatNumber}</p>` : ''}
           </div>
           <div>
             <div class="grid grid-cols-2 gap-4">
@@ -272,6 +317,15 @@ function InvoicesContent() {
           </div>
         ` : ''}
 
+        ${tenantData.stampUrl ? `
+          <div class="flex justify-end mt-8">
+            <div class="text-center">
+              <img src="${tenantData.stampUrl}" alt="Company Stamp" class="max-h-32 object-contain">
+              <p class="text-sm text-gray-600 mt-2">Company Stamp</p>
+            </div>
+          </div>
+        ` : ''}
+
         ${invoice.includeQR && tenantData.vatNumber ? `
           <div class="flex justify-end">
             <div class="text-center">
@@ -287,6 +341,10 @@ function InvoicesContent() {
   };
 
   const createArabicInvoiceHTML = (invoice: Invoice, tenantData: Tenant) => {
+    // Find customer and supplier if available
+    const customer = customers.find(c => c.name === invoice.clientName);
+    const supplier = suppliers.find(s => s.id === invoice.supplierId);
+    
     return `
       <div class="invoice-container" dir="rtl" style="font-family: Arial, sans-serif;">
         <div class="flex justify-between items-start mb-8 flex-row-reverse">
@@ -295,7 +353,9 @@ function InvoicesContent() {
             <p class="text-gray-600">رقم الفاتورة #${invoice.id.slice(-8)}</p>
           </div>
           <div class="text-left">
-            <h2 class="text-xl font-semibold">${tenantData.name}</h2>
+            ${tenantData.logoUrl ? `<img src="${tenantData.logoUrl}" alt="شعار الشركة" class="max-h-20 object-contain mr-auto mb-4">` : ''}
+            <h2 class="text-xl font-semibold">${tenantData.nameAr || tenantData.name}</h2>
+            ${tenantData.nameAr && tenantData.name ? `<p class="text-lg">${tenantData.name}</p>` : ''}
             <p>${tenantData.address}</p>
             <p>${tenantData.email}</p>
             <p>${tenantData.phone}</p>
@@ -306,10 +366,21 @@ function InvoicesContent() {
         <div class="grid grid-cols-2 gap-8 mb-8">
           <div class="text-right">
             <h3 class="font-semibold mb-2">:إلى</h3>
+            ${customer?.logoUrl ? `<img src="${customer.logoUrl}" alt="شعار العميل" class="max-h-16 object-contain ml-auto mb-2">` : ''}
             <p class="font-medium">${invoice.clientName}</p>
+            ${customer?.nameAr ? `<p class="text-md">${customer.nameAr}</p>` : ''}
             <p>${invoice.clientAddress}</p>
             <p>${invoice.clientEmail}</p>
             ${invoice.clientVAT ? `<p>الرقم الضريبي: ${invoice.clientVAT}</p>` : ''}
+          </div>
+          <div class="text-left">
+            <h3 class="font-semibold mb-2">:المورد</h3>
+            ${supplier?.logoUrl ? `<img src="${supplier.logoUrl}" alt="شعار المورد" class="max-h-16 object-contain mb-2">` : ''}
+            <p class="font-medium">${supplier?.nameAr || supplier?.name || 'غير متوفر'}</p>
+            ${supplier?.nameAr && supplier?.name ? `<p class="text-md">${supplier.name}</p>` : ''}
+            <p>${supplier?.address || 'غير متوفر'}</p>
+            <p>${supplier?.email || 'غير متوفر'}</p>
+            ${supplier?.vatNumber ? `<p>الرقم الضريبي: ${supplier.vatNumber}</p>` : ''}
           </div>
           <div class="text-left">
             <div class="grid grid-cols-2 gap-4">
@@ -376,6 +447,15 @@ function InvoicesContent() {
           <div class="mb-8 text-right">
             <h3 class="font-semibold mb-2">:ملاحظات</h3>
             <p class="text-gray-600">${invoice.notes}</p>
+          </div>
+        ` : ''}
+
+        ${tenantData.stampUrl ? `
+          <div class="flex justify-start mt-8">
+            <div class="text-center">
+              <img src="${tenantData.stampUrl}" alt="ختم الشركة" class="max-h-32 object-contain">
+              <p class="text-sm text-gray-600 mt-2">ختم الشركة</p>
+            </div>
           </div>
         ` : ''}
 
@@ -500,11 +580,23 @@ function InvoicesContent() {
                                   />
                                 </div>
                               </div>
-                              {selectedInvoice.template === 'arabic' ? (
-                                <ArabicInvoice invoice={selectedInvoice} tenant={tenant} />
-                              ) : (
-                                <EnglishInvoice invoice={selectedInvoice} tenant={tenant} />
-                              )}
+                              <div className="border rounded-lg p-4 bg-white">
+                                {selectedInvoice.template === 'english' ? (
+                                  <EnglishInvoice 
+                                    invoice={selectedInvoice} 
+                                    tenant={tenant} 
+                                    customer={customers.find(c => c.name === selectedInvoice.clientName)}
+                                    supplier={suppliers.find(s => s.id === selectedInvoice.supplierId)}
+                                  />
+                                ) : (
+                                  <ArabicInvoice 
+                                    invoice={selectedInvoice} 
+                                    tenant={tenant} 
+                                    customer={customers.find(c => c.name === selectedInvoice.clientName)}
+                                    supplier={suppliers.find(s => s.id === selectedInvoice.supplierId)}
+                                  />
+                                )}
+                              </div>
                             </div>
                           )}
                         </DialogContent>
@@ -534,9 +626,9 @@ function InvoicesContent() {
               {invoices.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center py-12 text-muted-foreground">
-                    <div className="flex flex-col items-center gap-2">
-                      <Receipt className="h-8 w-8" />
-                      <p>No invoices found. Click Create Invoice to get started.</p>
+                    <div className="flex flex-col items-center">
+                      <Receipt className="h-12 w-12 mb-4 text-gray-400" />
+                      <p>No invoices found. Create your first invoice to get started.</p>
                     </div>
                   </TableCell>
                 </TableRow>

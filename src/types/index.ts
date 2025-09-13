@@ -134,11 +134,13 @@ export interface InvoiceTemplate {
 export interface Supplier {
   id: string;
   name: string;
+  nameAr?: string; // Arabic supplier name
   email: string;
   address?: string;
   phone?: string;
   vatNumber?: string;
   contactPerson?: string;
+  logoUrl?: string; // Supplier logo URL
   tenantId: string;
   createdAt: Date;
   updatedAt: Date;
@@ -147,10 +149,12 @@ export interface Supplier {
 export interface Customer {
   id: string;
   name: string;
+  nameAr?: string; // Arabic customer name
   email: string;
   address?: string;
   phone?: string;
   vatNumber?: string;
+  logoUrl?: string; // Customer logo URL
   tenantId: string;
   createdAt: Date;
   updatedAt: Date;
@@ -183,10 +187,13 @@ export interface PurchaseInvoice {
 export interface Tenant {
   id: string;
   name: string;
+  nameAr?: string; // Arabic company name
   email: string;
   address?: string;
   phone?: string;
   vatNumber?: string;
+  logoUrl?: string; // Company logo URL
+  stampUrl?: string; // Company stamp URL
   createdAt: Date;
   subscriptionStatus: 'active' | 'inactive' | 'trial';
 }

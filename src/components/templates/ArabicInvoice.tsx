@@ -1,14 +1,16 @@
 'use client';
 
-import { Invoice, Tenant } from '@/types';
+import { Invoice, Tenant, Customer, Supplier } from '@/types';
 import ZatcaQR from '@/components/ZatcaQR';
 
 interface ArabicInvoiceProps {
   invoice: Invoice;
   tenant: Tenant;
+  customer?: Customer; // Customer data if available
+  supplier?: Supplier; // Supplier data if available
 }
 
-export default function ArabicInvoice({ invoice, tenant }: ArabicInvoiceProps) {
+export default function ArabicInvoice({ invoice, tenant, customer, supplier }: ArabicInvoiceProps) {
   return (
     <div dir="rtl" className="max-w-4xl mx-auto bg-white p-8 shadow-lg print-content" style={{ fontFamily: 'var(--font-amiri)' }}>
       {/* Header */}
@@ -25,7 +27,20 @@ export default function ArabicInvoice({ invoice, tenant }: ArabicInvoiceProps) {
           <p className="text-gray-600">رقم الفاتورة #{invoice.id.slice(-8)}</p>
         </div>
         <div className="text-left">
-          <h2 className="text-xl font-semibold">{tenant.name}</h2>
+          {/* Company Logo */}
+          {tenant.logoUrl && (
+            <div className="mb-4">
+              <img 
+                src={tenant.logoUrl} 
+                alt="شعار الشركة" 
+                className="max-h-20 object-contain mr-auto"
+              />
+            </div>
+          )}
+          <h2 className="text-xl font-semibold">{tenant.nameAr || tenant.name}</h2>
+          {tenant.nameAr && tenant.name && (
+            <p className="text-lg">{tenant.name}</p>
+          )}
           <p>{tenant.address}</p>
           <p>{tenant.email}</p>
           <p>{tenant.phone}</p>
@@ -37,10 +52,43 @@ export default function ArabicInvoice({ invoice, tenant }: ArabicInvoiceProps) {
       <div className="grid grid-cols-2 gap-8 mb-8">
         <div className="text-right">
           <h3 className="font-semibold mb-2">:إلى</h3>
+          {/* Customer Logo */}
+          {customer?.logoUrl && (
+            <div className="mb-2">
+              <img 
+                src={customer.logoUrl} 
+                alt="شعار العميل" 
+                className="max-h-16 object-contain ml-auto"
+              />
+            </div>
+          )}
           <p className="font-medium">{invoice.clientName}</p>
+          {customer?.nameAr && (
+            <p className="text-md">{customer.nameAr}</p>
+          )}
           <p>{invoice.clientAddress}</p>
           <p>{invoice.clientEmail}</p>
           {invoice.clientVAT && <p>الرقم الضريبي: {invoice.clientVAT}</p>}
+        </div>
+        <div className="text-left">
+          <h3 className="font-semibold mb-2">:المورد</h3>
+          {/* Supplier Logo */}
+          {supplier?.logoUrl && (
+            <div className="mb-2">
+              <img 
+                src={supplier.logoUrl} 
+                alt="شعار المورد" 
+                className="max-h-16 object-contain"
+              />
+            </div>
+          )}
+          <p className="font-medium">{supplier?.nameAr || supplier?.name || 'غير متوفر'}</p>
+          {supplier?.nameAr && supplier?.name && (
+            <p className="text-md">{supplier.name}</p>
+          )}
+          <p>{supplier?.address || 'غير متوفر'}</p>
+          <p>{supplier?.email || 'غير متوفر'}</p>
+          {supplier?.vatNumber && <p>الرقم الضريبي: {supplier.vatNumber}</p>}
         </div>
         <div className="text-left">
           <div className="grid grid-cols-2 gap-4">
@@ -113,6 +161,19 @@ export default function ArabicInvoice({ invoice, tenant }: ArabicInvoiceProps) {
         </div>
       )}
 
+      {/* Company Stamp */}
+      {tenant.stampUrl && (
+        <div className="flex justify-start mt-8">
+          <div className="text-center">
+            <img 
+              src={tenant.stampUrl} 
+              alt="ختم الشركة" 
+              className="max-h-32 object-contain"
+            />
+            <p className="text-sm text-gray-600 mt-2">ختم الشركة</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
