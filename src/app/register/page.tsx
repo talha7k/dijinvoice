@@ -46,7 +46,7 @@ function RegisterContent() {
 
       // Send verification email
       await sendEmailVerification(user, {
-        url: `${window.location.origin}/verify-email`,
+        url: `${window.location.origin}/`,
         handleCodeInApp: true,
       });
 

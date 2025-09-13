@@ -22,6 +22,8 @@ function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const showVerificationMessage = searchParams.get('verification') === 'true';
+  const verificationSuccess = searchParams.get('verification') === 'success';
+  const verificationError = searchParams.get('verification') === 'error';
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -87,7 +89,7 @@ function LoginContent() {
       
       // Send verification email
       await sendEmailVerification(user, {
-        url: `${window.location.origin}/verify-email`,
+        url: `${window.location.origin}/`,
         handleCodeInApp: true,
       });
       
@@ -160,6 +162,22 @@ function LoginContent() {
             <Alert className="mb-4">
               <AlertDescription>
                 Registration successful! Please check your email to verify your account before logging in.
+              </AlertDescription>
+            </Alert>
+          )}
+          
+          {verificationSuccess && (
+            <Alert className="mb-4 bg-green-50 border-green-200">
+              <AlertDescription className="text-green-800">
+                Your email has been successfully verified! You can now log in to your account.
+              </AlertDescription>
+            </Alert>
+          )}
+          
+          {verificationError && (
+            <Alert variant="destructive" className="mb-4">
+              <AlertDescription>
+                Email verification failed. The verification link may have expired or is invalid. Please try again or request a new verification email.
               </AlertDescription>
             </Alert>
           )}
