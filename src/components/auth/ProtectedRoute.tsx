@@ -11,14 +11,16 @@ interface ProtectedRouteProps {
 }
 
 export function ProtectedRoute({ children, redirectTo = '/login' }: ProtectedRouteProps) {
-  const { user, loading, error } = useAuth();
+  const { user, loading, error, emailVerified } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
     if (!loading && !user) {
       router.push(redirectTo);
+    } else if (!loading && user && !emailVerified) {
+      router.push('/login?verification=true');
     }
-  }, [user, loading, router, redirectTo]);
+  }, [user, loading, emailVerified, router, redirectTo]);
 
   if (loading) {
     return (
@@ -42,6 +44,10 @@ export function ProtectedRoute({ children, redirectTo = '/login' }: ProtectedRou
   }
 
   if (!user) {
+    return null; // Will redirect in the useEffect
+  }
+
+  if (!emailVerified) {
     return null; // Will redirect in the useEffect
   }
 

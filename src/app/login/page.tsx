@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { signInWithEmailAndPassword, sendPasswordResetEmail, signInWithPopup, sendEmailVerification } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { auth, googleProvider, db } from '@/lib/firebase';
@@ -276,6 +276,14 @@ function LoginContent() {
   );
 }
 
+function LoginPageComponent() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoginContent />
+    </Suspense>
+  );
+}
+
 export default function LoginPage() {
-  return <LoginContent />;
+  return <LoginPageComponent />;
 }
