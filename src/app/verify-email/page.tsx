@@ -7,6 +7,7 @@ import { applyActionCode, checkActionCode } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { toast } from 'sonner';
 
 function VerifyEmailContent() {
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
@@ -28,13 +29,18 @@ function VerifyEmailContent() {
 
         // Check the action code
         const info = await checkActionCode(auth, actionCode);
-        
+
         // Apply the action code (verify email)
         await applyActionCode(auth, actionCode);
-        
+
         setStatus('success');
         setMessage('Your email has been successfully verified!');
-        
+
+        // Show success toast
+        toast.success('Email Verified Successfully!', {
+          description: 'Your email has been verified. You can now log in to your account.',
+        });
+
         // Redirect to login after a short delay
         setTimeout(() => {
           router.push('/login');
@@ -43,10 +49,15 @@ function VerifyEmailContent() {
         console.error('Email verification error:', error);
         setStatus('error');
         setMessage(
-          error instanceof Error 
-            ? error.message 
+          error instanceof Error
+            ? error.message
             : 'Failed to verify email. The link may have expired or been used already.'
         );
+
+        // Show error toast
+        toast.error('Email Verification Failed', {
+          description: error instanceof Error ? error.message : 'Please try again or request a new verification email.',
+        });
       }
     };
 

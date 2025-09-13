@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { toast } from 'sonner';
 
 function LoginContent() {
   const [email, setEmail] = useState('');
@@ -36,7 +37,11 @@ function LoginContent() {
         setError('Please verify your email before logging in.');
         return;
       }
-      
+
+      toast.success('Welcome back!', {
+        description: 'You have successfully logged in to your account.',
+      });
+
       router.push('/dashboard');
     } catch (err: unknown) {
       console.error('Login error:', err);
@@ -91,6 +96,9 @@ function LoginContent() {
       
       setVerificationSent(true);
       setSuccess('Verification email sent! Please check your inbox.');
+      toast.success('Verification Email Sent!', {
+        description: 'Please check your email inbox for the verification link.',
+      });
     } catch (err: unknown) {
       console.error('Resend verification error:', err);
       

@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { toast } from 'sonner';
 
 function RegisterContent() {
   const [email, setEmail] = useState('');
@@ -47,6 +48,11 @@ function RegisterContent() {
       await sendEmailVerification(user, {
         url: `${window.location.origin}/verify-email`,
         handleCodeInApp: true,
+      });
+
+      // Show success toast
+      toast.success('Registration Successful!', {
+        description: 'Please check your email to verify your account before logging in.',
       });
 
       // Sign out the user and redirect to verification pending page
