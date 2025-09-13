@@ -20,6 +20,7 @@ function HomeContent() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [resetError, setResetError] = useState('');
   const [resetSuccess, setResetSuccess] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
 
   useEffect(() => {
     const checkForActionCode = async () => {
@@ -101,6 +102,8 @@ function HomeContent() {
       return;
     }
     
+    setIsResetting(true);
+    
     try {
       await confirmPasswordReset(auth, oobCode, newPassword);
       setResetSuccess(true);
@@ -116,6 +119,7 @@ function HomeContent() {
       console.error('Password reset error:', error);
       setResetError('Failed to reset password. Please try again.');
     }
+    setIsResetting(false);
   };
 
   if (isProcessing) {
@@ -187,7 +191,7 @@ function HomeContent() {
                 {resetError && (
                   <div className="text-red-500 text-sm">{resetError}</div>
                 )}
-                <Button type="submit" className="w-full">
+                <Button type="submit" className="w-full" loading={isResetting}>
                   Reset Password
                 </Button>
               </form>

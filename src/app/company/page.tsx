@@ -278,8 +278,8 @@ function CompanyContent() {
                 </div>
               </div>
 
-              <Button onClick={handleSaveCompanyInfo} disabled={saving}>
-                {saving ? 'Saving...' : 'Save Changes'}
+              <Button onClick={handleSaveCompanyInfo} loading={saving}>
+                Save Changes
               </Button>
             </CardContent>
           </Card>
@@ -317,9 +317,9 @@ function CompanyContent() {
                   )}
                   <div>
                     <Label htmlFor="logo-upload" className="cursor-pointer">
-                      <Button variant="outline" disabled={uploadingLogo}>
+                      <Button variant="outline" loading={uploadingLogo}>
                         <Upload className="h-4 w-4 mr-2" />
-                        {uploadingLogo ? 'Uploading...' : 'Upload Logo'}
+                        Upload Logo
                       </Button>
                     </Label>
                     <Input
@@ -362,9 +362,9 @@ function CompanyContent() {
                   )}
                   <div>
                     <Label htmlFor="stamp-upload" className="cursor-pointer">
-                      <Button variant="outline" disabled={uploadingStamp}>
+                      <Button variant="outline" loading={uploadingStamp}>
                         <Upload className="h-4 w-4 mr-2" />
-                        {uploadingStamp ? 'Uploading...' : 'Upload Stamp'}
+                        Upload Stamp
                       </Button>
                     </Label>
                     <Input
@@ -381,8 +381,8 @@ function CompanyContent() {
                 </div>
               </div>
 
-              <Button onClick={handleSaveCompanyInfo} disabled={saving}>
-                {saving ? 'Saving...' : 'Save Changes'}
+              <Button onClick={handleSaveCompanyInfo} loading={saving}>
+                Save Changes
               </Button>
             </CardContent>
           </Card>

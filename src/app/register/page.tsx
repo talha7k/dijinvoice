@@ -17,6 +17,7 @@ function RegisterContent() {
   const [password, setPassword] = useState('');
   const [tenantName, setTenantName] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -28,6 +29,8 @@ function RegisterContent() {
       setError('Password should be at least 6 characters');
       return;
     }
+    
+    setIsLoading(true);
     
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -77,6 +80,7 @@ function RegisterContent() {
       } else {
         setError('Registration failed: Unknown error');
       }
+      setIsLoading(false);
     }
   };
 
@@ -126,7 +130,9 @@ function RegisterContent() {
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
-            <Button type="submit" className="w-full">Sign Up</Button>
+            <Button type="submit" className="w-full" loading={isLoading}>
+              Sign Up
+            </Button>
           </form>
           <div className="mt-4 text-center">
             <span className="text-sm text-muted-foreground">Already have an account? </span>

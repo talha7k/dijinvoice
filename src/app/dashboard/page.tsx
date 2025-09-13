@@ -15,6 +15,7 @@ import { Quote, Invoice, Payment, Product, Service } from '@/types';
 function DashboardContent() {
   const { user, tenantId } = useAuth();
   const router = useRouter();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const [analytics, setAnalytics] = useState({
     quotes: { count: 0, total: 0, pending: 0 },
@@ -25,8 +26,15 @@ function DashboardContent() {
   });
 
   const handleLogout = async () => {
-    await signOut(auth);
-    router.push('/login');
+    setIsLoggingOut(true);
+    try {
+      await signOut(auth);
+      router.push('/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      setIsLoggingOut(false);
+    }
   };
 
   useEffect(() => {
@@ -75,7 +83,7 @@ function DashboardContent() {
     <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Dashboard</h1>
-        <Button onClick={handleLogout} variant="outline">Logout</Button>
+        <Button onClick={handleLogout} variant="outline" loading={isLoggingOut}>Logout</Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

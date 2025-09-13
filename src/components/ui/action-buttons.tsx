@@ -9,6 +9,8 @@ interface ActionButtonsProps {
   showEdit?: boolean;
   showDelete?: boolean;
   className?: string;
+  isEditing?: boolean;
+  isDeleting?: boolean;
 }
 
 export function ActionButtons({
@@ -16,7 +18,9 @@ export function ActionButtons({
   onDelete,
   showEdit = true,
   showDelete = true,
-  className = 'flex space-x-2'
+  className = 'flex space-x-2',
+  isEditing = false,
+  isDeleting = false
 }: ActionButtonsProps) {
   return (
     <div className={className}>
@@ -26,8 +30,9 @@ export function ActionButtons({
           size="sm"
           onClick={onEdit}
           title="Edit"
+          loading={isEditing}
         >
-          <Edit className="h-4 w-4" />
+          {!isEditing && <Edit className="h-4 w-4" />}
         </Button>
       )}
       {showDelete && onDelete && (
@@ -36,8 +41,9 @@ export function ActionButtons({
           size="sm"
           onClick={onDelete}
           title="Delete"
+          loading={isDeleting}
         >
-          <Trash2 className="h-4 w-4" />
+          {!isDeleting && <Trash2 className="h-4 w-4" />}
         </Button>
       )}
     </div>

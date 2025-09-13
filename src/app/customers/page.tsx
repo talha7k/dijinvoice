@@ -276,9 +276,9 @@ export default function CustomersPage() {
                 )}
                 <div>
                   <Label htmlFor="logo-upload" className="cursor-pointer">
-                    <Button variant="outline" disabled={uploadingLogo}>
+                    <Button variant="outline" loading={uploadingLogo}>
                       <Upload className="h-4 w-4 mr-2" />
-                      {uploadingLogo ? 'Uploading...' : 'Upload Logo'}
+                      Upload Logo
                     </Button>
                   </Label>
                   <Input

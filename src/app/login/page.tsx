@@ -19,6 +19,9 @@ function LoginContent() {
   const [success, setSuccess] = useState('');
   const [isResetMode, setIsResetMode] = useState(false);
   const [verificationSent, setVerificationSent] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isResendLoading, setIsResendLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const showVerificationMessage = searchParams.get('verification') === 'true';
@@ -29,6 +32,7 @@ function LoginContent() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setIsLoading(true);
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
@@ -38,6 +42,7 @@ function LoginContent() {
         // Sign out the user
         await auth.signOut();
         setError('Please verify your email before logging in.');
+        setIsLoading(false);
         return;
       }
 
@@ -64,6 +69,7 @@ function LoginContent() {
       } else {
         setError('Login failed: Unknown error');
       }
+      setIsLoading(false);
     }
   };
 
@@ -71,17 +77,20 @@ function LoginContent() {
     e.preventDefault();
     setError('');
     setSuccess('');
+    setIsLoading(true);
     try {
       await sendPasswordResetEmail(auth, email);
       setSuccess('Password reset email sent! Check your inbox.');
     } catch {
       setError('Failed to send reset email. Please check your email address.');
     }
+    setIsLoading(false);
   };
 
   const handleResendVerification = async () => {
     setError('');
     setSuccess('');
+    setIsResendLoading(true);
     
     try {
       // First sign in the user to get their user object
@@ -117,10 +126,12 @@ function LoginContent() {
         setError('Failed to resend verification: Unknown error');
       }
     }
+    setIsResendLoading(false);
   };
 
   const handleGoogleSignIn = async () => {
     setError('');
+    setIsGoogleLoading(true);
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
@@ -144,6 +155,7 @@ function LoginContent() {
     } catch {
       setError('Google sign-in failed. Please try again.');
     }
+    setIsGoogleLoading(false);
   };
 
   return (
@@ -224,7 +236,7 @@ function LoginContent() {
                 <AlertDescription>{success}</AlertDescription>
               </Alert>
             )}
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full" loading={isLoading}>
               {isResetMode ? 'Send Reset Email' : 'Sign In'}
             </Button>
 
@@ -245,6 +257,7 @@ function LoginContent() {
                   variant="outline"
                   className="w-full"
                   onClick={handleGoogleSignIn}
+                  loading={isGoogleLoading}
                 >
                   <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
                     <path
@@ -273,13 +286,15 @@ function LoginContent() {
             {!isResetMode ? (
               <>
                 {error && error.includes('verify your email') && (
-                  <button
+                  <Button
                     type="button"
+                    variant="link"
                     onClick={handleResendVerification}
-                    className="text-sm text-primary hover:underline"
+                    loading={isResendLoading}
+                    className="p-0 h-auto text-sm"
                   >
                     Resend verification email
-                  </button>
+                  </Button>
                 )}
                 <button
                   type="button"
