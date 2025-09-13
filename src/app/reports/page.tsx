@@ -14,10 +14,18 @@ import { useAuth } from '@/contexts/AuthContext';
 import { collection, getDocs, query, where, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
+interface InvoiceItem {
+  id: string;
+  description: string;
+  quantity: number;
+  price: number;
+  total: number;
+}
+
 interface Invoice {
   id: string;
   type: 'sales' | 'purchase';
-  items: any[];
+  items: InvoiceItem[];
   subtotal: number;
   taxRate: number;
   taxAmount: number;
@@ -499,30 +507,29 @@ export default function ReportsPage() {
                   <Card>
                     <CardHeader>
                       <CardTitle>Supporting Documents</CardTitle>
+                      <CardDescription>
+                        Summary of invoices included in this VAT report
+                      </CardDescription>
                     </CardHeader>
                     <CardContent>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <h4 className="font-medium">Sales Invoices</h4>
-                          <div className="flex items-center gap-2">
-                            <Badge variant="secondary">
-                              {invoices.filter(inv => inv.type === 'sales').length} invoices
-                            </Badge>
-                            <span className="text-sm text-muted-foreground">
-                              Total: SAR {reportData.totalSales.toFixed(2)}
-                            </span>
-                          </div>
+                          <h3 className="text-lg font-semibold">Sales Invoices</h3>
+                          <p className="text-sm text-muted-foreground">
+                            Total: {invoices.filter(inv => inv.type === 'sales').length} invoices
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            Total Value: SAR {reportData.totalSales.toFixed(2)}
+                          </p>
                         </div>
                         <div className="space-y-2">
-                          <h4 className="font-medium">Purchase Invoices</h4>
-                          <div className="flex items-center gap-2">
-                            <Badge variant="secondary">
-                              {invoices.filter(inv => inv.type === 'purchase').length} invoices
-                            </Badge>
-                            <span className="text-sm text-muted-foreground">
-                              Total: SAR {reportData.totalPurchases.toFixed(2)}
-                            </span>
-                          </div>
+                          <h3 className="text-lg font-semibold">Purchase Invoices</h3>
+                          <p className="text-sm text-muted-foreground">
+                            Total: {invoices.filter(inv => inv.type === 'purchase').length} invoices
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            Total Value: SAR {reportData.totalPurchases.toFixed(2)}
+                          </p>
                         </div>
                       </div>
                     </CardContent>

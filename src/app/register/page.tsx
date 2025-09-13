@@ -20,6 +20,14 @@ function RegisterContent() {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
+    
+    // Validate password strength
+    if (password.length < 6) {
+      setError('Password should be at least 6 characters');
+      return;
+    }
+    
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
@@ -35,8 +43,25 @@ function RegisterContent() {
       });
 
       router.push('/dashboard');
-    } catch {
-      setError('Registration failed');
+    } catch (err: unknown) {
+      console.error('Registration error:', err);
+      
+      // Handle specific Firebase auth errors
+      if (err instanceof Error) {
+        if (err.message.includes('email-already-in-use')) {
+          setError('This email is already registered. Please sign in instead.');
+        } else if (err.message.includes('invalid-email')) {
+          setError('Please enter a valid email address.');
+        } else if (err.message.includes('operation-not-allowed')) {
+          setError('Email/password accounts are not enabled. Please contact support.');
+        } else if (err.message.includes('weak-password')) {
+          setError('Password is too weak. Please use a stronger password.');
+        } else {
+          setError('Registration failed: ' + err.message);
+        }
+      } else {
+        setError('Registration failed: Unknown error');
+      }
     }
   };
 
@@ -77,6 +102,9 @@ function RegisterContent() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
+              <p className="text-xs text-muted-foreground mt-1">
+                Password must be at least 6 characters
+              </p>
             </div>
             {error && (
               <Alert variant="destructive">
