@@ -8,7 +8,7 @@ import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+} from "@/components/sidebar/collapsible";
 import { NavigationItem } from "./sidebar-types";
 import { SidebarNavItem } from "./sidebar-nav-item";
 

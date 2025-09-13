@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { CollapsibleSidebar } from '@/components/ui/collapsible-sidebar';
+import { CollapsibleSidebar } from '@/components/sidebar/collapsible-sidebar';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 
 interface AppLayoutProps {

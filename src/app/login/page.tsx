@@ -54,18 +54,35 @@ function LoginContent() {
     } catch (err: unknown) {
       console.error('Login error:', err);
       
-      if (err instanceof Error) {
-        if (err.message.includes('user-not-found')) {
-          setError('No account found with this email. Please register first.');
-        } else if (err.message.includes('wrong-password')) {
-          setError('Incorrect password. Please try again.');
-        } else if (err.message.includes('user-disabled')) {
-          setError('This account has been disabled. Please contact support.');
-        } else if (err.message.includes('too-many-requests')) {
-          setError('Too many failed login attempts. Please try again later.');
-        } else {
-          setError('Login failed: ' + err.message);
+      // Check if it's a Firebase Auth error
+      if (err && typeof err === 'object' && 'code' in err) {
+        const firebaseError = err as { code: string; message: string };
+        
+        switch (firebaseError.code) {
+          case 'auth/user-not-found':
+            setError('No account found with this email. Please register first.');
+            break;
+          case 'auth/wrong-password':
+            setError('Incorrect password. Please try again.');
+            break;
+          case 'auth/invalid-credential':
+            setError('Invalid email or password. Please check your credentials and try again.');
+            break;
+          case 'auth/user-disabled':
+            setError('This account has been disabled. Please contact support.');
+            break;
+          case 'auth/too-many-requests':
+            setError('Too many failed login attempts. Please try again later.');
+            break;
+          case 'auth/invalid-email':
+            setError('Invalid email address. Please enter a valid email.');
+            break;
+          default:
+            setError('Login failed: ' + firebaseError.message);
         }
+      } else if (err instanceof Error) {
+        // Fallback for other error types
+        setError('Login failed: ' + err.message);
       } else {
         setError('Login failed: Unknown error');
       }
@@ -83,8 +100,32 @@ function LoginContent() {
         url: `${window.location.origin}/auth/action`,
       });
       setSuccess('Password reset email sent! Check your inbox.');
-    } catch {
-      setError('Failed to send reset email. Please check your email address.');
+    } catch (err: unknown) {
+      console.error('Password reset error:', err);
+      
+      // Check if it's a Firebase Auth error
+      if (err && typeof err === 'object' && 'code' in err) {
+        const firebaseError = err as { code: string; message: string };
+        
+        switch (firebaseError.code) {
+          case 'auth/user-not-found':
+            setError('No account found with this email. Please register first.');
+            break;
+          case 'auth/invalid-email':
+            setError('Invalid email address. Please enter a valid email.');
+            break;
+          case 'auth/too-many-requests':
+            setError('Too many password reset attempts. Please try again later.');
+            break;
+          default:
+            setError('Failed to send reset email: ' + firebaseError.message);
+        }
+      } else if (err instanceof Error) {
+        // Fallback for other error types
+        setError('Failed to send reset email: ' + err.message);
+      } else {
+        setError('Failed to send reset email. Please check your email address.');
+      }
     }
     setIsLoading(false);
   };
@@ -116,14 +157,35 @@ function LoginContent() {
     } catch (err: unknown) {
       console.error('Resend verification error:', err);
       
-      if (err instanceof Error) {
-        if (err.message.includes('user-not-found')) {
-          setError('No account found with this email. Please register first.');
-        } else if (err.message.includes('wrong-password')) {
-          setError('Incorrect password. Please enter the correct password to resend verification.');
-        } else {
-          setError('Failed to resend verification: ' + err.message);
+      // Check if it's a Firebase Auth error
+      if (err && typeof err === 'object' && 'code' in err) {
+        const firebaseError = err as { code: string; message: string };
+        
+        switch (firebaseError.code) {
+          case 'auth/user-not-found':
+            setError('No account found with this email. Please register first.');
+            break;
+          case 'auth/wrong-password':
+            setError('Incorrect password. Please enter the correct password to resend verification.');
+            break;
+          case 'auth/invalid-credential':
+            setError('Invalid email or password. Please check your credentials and try again.');
+            break;
+          case 'auth/user-disabled':
+            setError('This account has been disabled. Please contact support.');
+            break;
+          case 'auth/too-many-requests':
+            setError('Too many failed login attempts. Please try again later.');
+            break;
+          case 'auth/invalid-email':
+            setError('Invalid email address. Please enter a valid email.');
+            break;
+          default:
+            setError('Failed to resend verification: ' + firebaseError.message);
         }
+      } else if (err instanceof Error) {
+        // Fallback for other error types
+        setError('Failed to resend verification: ' + err.message);
       } else {
         setError('Failed to resend verification: Unknown error');
       }
@@ -154,8 +216,35 @@ function LoginContent() {
       }
 
       router.push('/dashboard');
-    } catch {
-      setError('Google sign-in failed. Please try again.');
+    } catch (err: unknown) {
+      console.error('Google sign-in error:', err);
+      
+      // Check if it's a Firebase Auth error
+      if (err && typeof err === 'object' && 'code' in err) {
+        const firebaseError = err as { code: string; message: string };
+        
+        switch (firebaseError.code) {
+          case 'auth/popup-closed-by-user':
+            setError('Google sign-in was cancelled. Please try again.');
+            break;
+          case 'auth/popup-blocked':
+            setError('Google sign-in popup was blocked. Please allow popups and try again.');
+            break;
+          case 'auth/cancelled-popup-request':
+            setError('Google sign-in was cancelled. Please try again.');
+            break;
+          case 'auth/account-exists-with-different-credential':
+            setError('An account already exists with the same email address but different sign-in credentials. Please sign in using a different method.');
+            break;
+          default:
+            setError('Google sign-in failed: ' + firebaseError.message);
+        }
+      } else if (err instanceof Error) {
+        // Fallback for other error types
+        setError('Google sign-in failed: ' + err.message);
+      } else {
+        setError('Google sign-in failed. Please try again.');
+      }
     }
     setIsGoogleLoading(false);
   };
