@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { auth } from '@/lib/firebase';
 import { applyActionCode, checkActionCode } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
@@ -13,13 +13,13 @@ function VerifyEmailContent() {
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('');
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     const handleEmailVerification = async () => {
       try {
         // Get the action code from the URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const actionCode = urlParams.get('oobCode');
+        const actionCode = searchParams.get('oobCode');
 
         if (!actionCode) {
           setStatus('error');
@@ -62,7 +62,7 @@ function VerifyEmailContent() {
     };
 
     handleEmailVerification();
-  }, [router]);
+  }, [router, searchParams]);
 
   const handleResendEmail = async () => {
     try {
@@ -121,6 +121,14 @@ function VerifyEmailContent() {
   );
 }
 
+function VerifyEmailPageComponent() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <VerifyEmailContent />
+    </Suspense>
+  );
+}
+
 export default function VerifyEmailPage() {
-  return <VerifyEmailContent />;
+  return <VerifyEmailPageComponent />;
 }

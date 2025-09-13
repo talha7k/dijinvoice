@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function FirebaseActionHandler() {
+function FirebaseActionHandlerContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -42,5 +42,13 @@ export default function FirebaseActionHandler() {
         <p className="mt-4">Processing...</p>
       </div>
     </div>
+  );
+}
+
+export default function FirebaseActionHandler() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <FirebaseActionHandlerContent />
+    </Suspense>
   );
 }
