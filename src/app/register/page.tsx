@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
@@ -40,9 +40,18 @@ function RegisterContent() {
         email: email,
         createdAt: new Date(),
         subscriptionStatus: 'trial',
+        emailVerified: false,
       });
 
-      router.push('/dashboard');
+      // Send verification email
+      await sendEmailVerification(user, {
+        url: `${window.location.origin}/verify-email`,
+        handleCodeInApp: true,
+      });
+
+      // Sign out the user and redirect to verification pending page
+      await auth.signOut();
+      router.push('/login?verification=true');
     } catch (err: unknown) {
       console.error('Registration error:', err);
       

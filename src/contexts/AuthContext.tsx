@@ -9,6 +9,7 @@ interface AuthContextType {
   loading: boolean;
   tenantId: string | null;
   error: string | null;
+  emailVerified: boolean;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -16,6 +17,7 @@ const AuthContext = createContext<AuthContextType>({
   loading: true,
   tenantId: null,
   error: null,
+  emailVerified: false,
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -25,6 +27,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [tenantId, setTenantId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [emailVerified, setEmailVerified] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -37,8 +40,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           // For simplicity, use user.uid as tenantId
           // In production, get from custom claims or user doc
           setTenantId(user.uid);
+          setEmailVerified(user.emailVerified || false);
         } else {
           setTenantId(null);
+          setEmailVerified(false);
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An unknown error occurred');
@@ -52,7 +57,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, tenantId, error }}>
+    <AuthContext.Provider value={{ user, loading, tenantId, error, emailVerified }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
-import { signInWithEmailAndPassword, sendPasswordResetEmail, signInWithPopup } from 'firebase/auth';
+import { useState, useEffect } from 'react';
+import { signInWithEmailAndPassword, sendPasswordResetEmail, signInWithPopup, sendEmailVerification } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { auth, googleProvider, db } from '@/lib/firebase';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -17,16 +17,45 @@ function LoginContent() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [isResetMode, setIsResetMode] = useState(false);
+  const [verificationSent, setVerificationSent] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const showVerificationMessage = searchParams.get('verification') === 'true';
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      
+      // Check if email is verified
+      if (!user.emailVerified) {
+        // Sign out the user
+        await auth.signOut();
+        setError('Please verify your email before logging in.');
+        return;
+      }
+      
       router.push('/dashboard');
-    } catch {
-      setError('Invalid credentials');
+    } catch (err: unknown) {
+      console.error('Login error:', err);
+      
+      if (err instanceof Error) {
+        if (err.message.includes('user-not-found')) {
+          setError('No account found with this email. Please register first.');
+        } else if (err.message.includes('wrong-password')) {
+          setError('Incorrect password. Please try again.');
+        } else if (err.message.includes('user-disabled')) {
+          setError('This account has been disabled. Please contact support.');
+        } else if (err.message.includes('too-many-requests')) {
+          setError('Too many failed login attempts. Please try again later.');
+        } else {
+          setError('Login failed: ' + err.message);
+        }
+      } else {
+        setError('Login failed: Unknown error');
+      }
     }
   };
 
@@ -39,6 +68,43 @@ function LoginContent() {
       setSuccess('Password reset email sent! Check your inbox.');
     } catch {
       setError('Failed to send reset email. Please check your email address.');
+    }
+  };
+
+  const handleResendVerification = async () => {
+    setError('');
+    setSuccess('');
+    
+    try {
+      // First sign in the user to get their user object
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      
+      // Send verification email
+      await sendEmailVerification(user, {
+        url: `${window.location.origin}/verify-email`,
+        handleCodeInApp: true,
+      });
+      
+      // Sign out the user
+      await auth.signOut();
+      
+      setVerificationSent(true);
+      setSuccess('Verification email sent! Please check your inbox.');
+    } catch (err: unknown) {
+      console.error('Resend verification error:', err);
+      
+      if (err instanceof Error) {
+        if (err.message.includes('user-not-found')) {
+          setError('No account found with this email. Please register first.');
+        } else if (err.message.includes('wrong-password')) {
+          setError('Incorrect password. Please enter the correct password to resend verification.');
+        } else {
+          setError('Failed to resend verification: ' + err.message);
+        }
+      } else {
+        setError('Failed to resend verification: Unknown error');
+      }
     }
   };
 
@@ -82,6 +148,14 @@ function LoginContent() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {showVerificationMessage && (
+            <Alert className="mb-4">
+              <AlertDescription>
+                Registration successful! Please check your email to verify your account before logging in.
+              </AlertDescription>
+            </Alert>
+          )}
+          
           <form onSubmit={isResetMode ? handlePasswordReset : handleLogin} className="space-y-4">
             <div>
               <Label htmlFor="email">Email</Label>
@@ -163,6 +237,15 @@ function LoginContent() {
           <div className="mt-4 text-center space-y-2">
             {!isResetMode ? (
               <>
+                {error && error.includes('verify your email') && (
+                  <button
+                    type="button"
+                    onClick={handleResendVerification}
+                    className="text-sm text-primary hover:underline"
+                  >
+                    Resend verification email
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={() => setIsResetMode(true)}
