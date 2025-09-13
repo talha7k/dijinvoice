@@ -77,8 +77,9 @@ function HomeContent() {
       }
     };
 
+    // Always run the check for action codes
     checkForActionCode();
-  }, [user, loading, tenantId, emailVerified, router, searchParams]);
+  }, [searchParams]);
 
   const handlePasswordReset = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -137,6 +138,8 @@ function HomeContent() {
             <CardDescription>
               {resetSuccess
                 ? 'Your password has been reset successfully.'
+                : resetError
+                ? 'Password Reset Failed'
                 : 'Enter your new password below.'}
             </CardDescription>
           </CardHeader>
@@ -145,6 +148,13 @@ function HomeContent() {
               <div className="text-center">
                 <p className="mb-4">You will be redirected to the login page shortly...</p>
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+              </div>
+            ) : resetError ? (
+              <div className="space-y-4">
+                <div className="text-red-500 text-sm">{resetError}</div>
+                <Button onClick={() => router.push('/login')} className="w-full">
+                  Back to Login
+                </Button>
               </div>
             ) : (
               <form onSubmit={handlePasswordReset} className="space-y-4">
