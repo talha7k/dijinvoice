@@ -1,14 +1,14 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { useTheme } from "@/contexts/ThemeContext"
-import { useAuth } from "@/contexts/AuthContext"
+import * as React from "react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useTheme } from "@/contexts/ThemeContext";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   BarChart3,
   Building2,
@@ -25,13 +25,18 @@ import {
   Settings,
   Sun,
   Users,
+  User,
   Wallet,
-} from "lucide-react"
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
-import { auth } from "@/lib/firebase"
+} from "lucide-react";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { auth } from "@/lib/firebase";
 
 interface SidebarProps {
-  className?: string
+  className?: string;
 }
 
 const navigationItems = [
@@ -69,7 +74,7 @@ const navigationItems = [
         href: "/customers",
         icon: Users,
       },
-    ]
+    ],
   },
   {
     title: "Purchases",
@@ -90,7 +95,7 @@ const navigationItems = [
         href: "/suppliers",
         icon: Users,
       },
-    ]
+    ],
   },
   {
     title: "Reports",
@@ -107,34 +112,36 @@ const navigationItems = [
     href: "/settings",
     icon: Settings,
   },
-]
+];
 
 export function CollapsibleSidebar({ className }: SidebarProps) {
-  const [isCollapsed, setIsCollapsed] = React.useState(false)
-  const [openSections, setOpenSections] = React.useState<{ [key: string]: boolean }>({
+  const [isCollapsed, setIsCollapsed] = React.useState(false);
+  const [openSections, setOpenSections] = React.useState<{
+    [key: string]: boolean;
+  }>({
     Sales: true,
     Purchases: true,
-  })
-  const pathname = usePathname()
-  const router = useRouter()
-  const { theme, toggleTheme } = useTheme()
-  const { user, tenantId } = useAuth()
+  });
+  const pathname = usePathname();
+  const router = useRouter();
+  const { theme, toggleTheme } = useTheme();
+  const { user, tenantId } = useAuth();
 
   const toggleSection = (title: string) => {
-    setOpenSections(prev => ({
+    setOpenSections((prev) => ({
       ...prev,
-      [title]: !prev[title]
-    }))
-  }
+      [title]: !prev[title],
+    }));
+  };
 
   const handleLogout = async () => {
     try {
-      await auth.signOut()
-      router.push('/login')
+      await auth.signOut();
+      router.push("/login");
     } catch (error) {
-      console.error('Error signing out:', error)
+      console.error("Error signing out:", error);
     }
-  }
+  };
 
   return (
     <>
@@ -162,7 +169,11 @@ export function CollapsibleSidebar({ className }: SidebarProps) {
                 onClick={toggleTheme}
                 className="h-8 w-8 p-0"
               >
-                {theme === 'light' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+                {theme === "light" ? (
+                  <Moon className="h-4 w-4" />
+                ) : (
+                  <Sun className="h-4 w-4" />
+                )}
               </Button>
               <Button
                 variant="outline"
@@ -184,10 +195,16 @@ export function CollapsibleSidebar({ className }: SidebarProps) {
             <nav className="space-y-2">
               {navigationItems.map((item) => {
                 if (item.children) {
-                  const isSectionOpen = openSections[item.title]
-                  const hasActiveChild = item.children.some(child => pathname === child.href)
+                  const isSectionOpen = openSections[item.title];
+                  const hasActiveChild = item.children.some(
+                    (child) => pathname === child.href
+                  );
                   return (
-                    <Collapsible key={item.title} open={isSectionOpen} onOpenChange={() => toggleSection(item.title)}>
+                    <Collapsible
+                      key={item.title}
+                      open={isSectionOpen}
+                      onOpenChange={() => toggleSection(item.title)}
+                    >
                       <CollapsibleTrigger asChild>
                         <Button
                           variant="ghost"
@@ -197,11 +214,18 @@ export function CollapsibleSidebar({ className }: SidebarProps) {
                             hasActiveChild && "bg-secondary/50"
                           )}
                         >
-                          <item.icon className={cn("h-4 w-4", !isCollapsed && "mr-3")} />
+                          <item.icon
+                            className={cn("h-4 w-4", !isCollapsed && "mr-3")}
+                          />
                           {!isCollapsed && (
                             <>
                               <span>{item.title}</span>
-                              <ChevronDown className={cn("h-4 w-4 ml-auto transition-transform", isSectionOpen ? "rotate-180" : "")} />
+                              <ChevronDown
+                                className={cn(
+                                  "h-4 w-4 ml-auto transition-transform",
+                                  isSectionOpen ? "rotate-180" : ""
+                                )}
+                              />
                             </>
                           )}
                         </Button>
@@ -209,7 +233,7 @@ export function CollapsibleSidebar({ className }: SidebarProps) {
                       {!isCollapsed && (
                         <CollapsibleContent className="space-y-1 ml-6">
                           {item.children.map((child) => {
-                            const isActive = pathname === child.href
+                            const isActive = pathname === child.href;
                             return (
                               <Link key={child.href} href={child.href}>
                                 <Button
@@ -224,14 +248,14 @@ export function CollapsibleSidebar({ className }: SidebarProps) {
                                   <span className="text-sm">{child.title}</span>
                                 </Button>
                               </Link>
-                            )
+                            );
                           })}
                         </CollapsibleContent>
                       )}
                     </Collapsible>
-                  )
+                  );
                 } else {
-                  const isActive = pathname === item.href
+                  const isActive = pathname === item.href;
                   return (
                     <Link key={item.href} href={item.href!}>
                       <Button
@@ -242,11 +266,13 @@ export function CollapsibleSidebar({ className }: SidebarProps) {
                           isActive && "bg-secondary"
                         )}
                       >
-                        <item.icon className={cn("h-4 w-4", !isCollapsed && "mr-3")} />
+                        <item.icon
+                          className={cn("h-4 w-4", !isCollapsed && "mr-3")}
+                        />
                         {!isCollapsed && <span>{item.title}</span>}
                       </Button>
                     </Link>
-                  )
+                  );
                 }
               })}
             </nav>
@@ -260,12 +286,14 @@ export function CollapsibleSidebar({ className }: SidebarProps) {
                   <div className="flex items-center space-x-3">
                     <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
                       <span className="text-primary-foreground text-sm font-medium">
-                        {user.email?.charAt(0).toUpperCase() || 'U'}
+                        {user.email?.charAt(0).toUpperCase() || "U"}
                       </span>
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">
-                        {user.displayName || user.email?.split('@')[0] || 'User'}
+                        {user.displayName ||
+                          user.email?.split("@")[0] ||
+                          "User"}
                       </p>
                       <p className="text-xs text-muted-foreground truncate">
                         {user.email}
@@ -273,9 +301,48 @@ export function CollapsibleSidebar({ className }: SidebarProps) {
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">
-                      Company: {tenantId?.substring(0, 8)}...
+                    <div className="flex items-center space-x-1">
+                      <Building2 className="h-3 w-3 text-muted-foreground" />
+                      <span className="text-xs text-muted-foreground">
+                        {tenantId?.substring(0, 8) + "..."}
+                      </span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => router.push("/company?tab=account")}
+                        className="h-8 w-8 p-0"
+                      >
+                        <User className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleLogout}
+                        className="h-8 w-8 p-0"
+                      >
+                        <LogOut className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center space-y-2">
+                  <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                    <span className="text-primary-foreground text-sm font-medium">
+                      {user.email?.charAt(0).toUpperCase() || "U"}
                     </span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => router.push("/company?tab=account")}
+                      className="h-8 w-8 p-0"
+                    >
+                      <User className="h-4 w-4" />
+                    </Button>
                     <Button
                       variant="ghost"
                       size="sm"
@@ -285,22 +352,6 @@ export function CollapsibleSidebar({ className }: SidebarProps) {
                       <LogOut className="h-4 w-4" />
                     </Button>
                   </div>
-                </div>
-              ) : (
-                <div className="flex flex-col items-center space-y-2">
-                  <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                    <span className="text-primary-foreground text-sm font-medium">
-                      {user.email?.charAt(0).toUpperCase() || 'U'}
-                    </span>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleLogout}
-                    className="h-8 w-8 p-0"
-                  >
-                    <LogOut className="h-4 w-4" />
-                  </Button>
                 </div>
               )}
             </div>
@@ -333,7 +384,11 @@ export function CollapsibleSidebar({ className }: SidebarProps) {
                 onClick={toggleTheme}
                 className="h-8 w-8 p-0"
               >
-                {theme === 'light' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+                {theme === "light" ? (
+                  <Moon className="h-4 w-4" />
+                ) : (
+                  <Sun className="h-4 w-4" />
+                )}
               </Button>
             </div>
 
@@ -342,10 +397,16 @@ export function CollapsibleSidebar({ className }: SidebarProps) {
               <nav className="space-y-2">
                 {navigationItems.map((item) => {
                   if (item.children) {
-                    const isSectionOpen = openSections[item.title]
-                    const hasActiveChild = item.children.some(child => pathname === child.href)
+                    const isSectionOpen = openSections[item.title];
+                    const hasActiveChild = item.children.some(
+                      (child) => pathname === child.href
+                    );
                     return (
-                      <Collapsible key={item.title} open={isSectionOpen} onOpenChange={() => toggleSection(item.title)}>
+                      <Collapsible
+                        key={item.title}
+                        open={isSectionOpen}
+                        onOpenChange={() => toggleSection(item.title)}
+                      >
                         <CollapsibleTrigger asChild>
                           <Button
                             variant="ghost"
@@ -356,12 +417,17 @@ export function CollapsibleSidebar({ className }: SidebarProps) {
                           >
                             <item.icon className="h-4 w-4 mr-3" />
                             <span>{item.title}</span>
-                            <ChevronDown className={cn("h-4 w-4 ml-auto transition-transform", isSectionOpen ? "rotate-180" : "")} />
+                            <ChevronDown
+                              className={cn(
+                                "h-4 w-4 ml-auto transition-transform",
+                                isSectionOpen ? "rotate-180" : ""
+                              )}
+                            />
                           </Button>
                         </CollapsibleTrigger>
                         <CollapsibleContent className="space-y-1 ml-6">
                           {item.children.map((child) => {
-                            const isActive = pathname === child.href
+                            const isActive = pathname === child.href;
                             return (
                               <Link key={child.href} href={child.href}>
                                 <Button
@@ -376,13 +442,13 @@ export function CollapsibleSidebar({ className }: SidebarProps) {
                                   <span className="text-sm">{child.title}</span>
                                 </Button>
                               </Link>
-                            )
+                            );
                           })}
                         </CollapsibleContent>
                       </Collapsible>
-                    )
+                    );
                   } else {
-                    const isActive = pathname === item.href
+                    const isActive = pathname === item.href;
                     return (
                       <Link key={item.href} href={item.href!}>
                         <Button
@@ -396,7 +462,7 @@ export function CollapsibleSidebar({ className }: SidebarProps) {
                           <span>{item.title}</span>
                         </Button>
                       </Link>
-                    )
+                    );
                   }
                 })}
               </nav>
@@ -406,15 +472,20 @@ export function CollapsibleSidebar({ className }: SidebarProps) {
             {user && (
               <div className="border-t p-4">
                 <div className="space-y-3">
-                  <div className="flex items-center space-x-3">
+                  <div
+                    onClick={() => router.push("/company?tab=account")}
+                    className="flex items-center space-x-3"
+                  >
                     <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
                       <span className="text-primary-foreground text-sm font-medium">
-                        {user.email?.charAt(0).toUpperCase() || 'U'}
+                        {user.email?.charAt(0).toUpperCase() || "U"}
                       </span>
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">
-                        {user.displayName || user.email?.split('@')[0] || 'User'}
+                        {user.displayName ||
+                          user.email?.split("@")[0] ||
+                          "User"}
                       </p>
                       <p className="text-xs text-muted-foreground truncate">
                         {user.email}
@@ -422,17 +493,22 @@ export function CollapsibleSidebar({ className }: SidebarProps) {
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">
-                      Company: {tenantId?.substring(0, 8)}...
-                    </span>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleLogout}
-                      className="h-8 w-8 p-0"
-                    >
-                      <LogOut className="h-4 w-4" />
-                    </Button>
+                    {/* <div className="flex items-center space-x-1">
+                      <Building2 className="h-3 w-3 text-muted-foreground" />
+                      <span className="text-xs text-muted-foreground">
+                        {tenantId?.substring(0, 8) + "..."}
+                      </span>
+                    </div> */}
+                    <div className="flex items-center space-x-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleLogout}
+                        className="h-8 w-8 p-0"
+                      >
+                        <LogOut className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -441,5 +517,5 @@ export function CollapsibleSidebar({ className }: SidebarProps) {
         </SheetContent>
       </Sheet>
     </>
-  )
+  );
 }
