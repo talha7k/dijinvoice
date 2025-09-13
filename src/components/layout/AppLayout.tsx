@@ -13,7 +13,7 @@ export function AppLayout({ children }: AppLayoutProps) {
   const pathname = usePathname();
   const { loading } = useAuth();
 
-  const isPublicRoute = pathname === '/login' || pathname === '/register';
+  const isPublicRoute = pathname === '/login' || pathname === '/register' || pathname === '/verify-email' || pathname === '/reset-password' || pathname.startsWith('/__/auth');
 
   if (isPublicRoute) {
     // For public pages, don't show sidebar

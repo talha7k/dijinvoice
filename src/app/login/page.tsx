@@ -79,7 +79,9 @@ function LoginContent() {
     setSuccess('');
     setIsLoading(true);
     try {
-      await sendPasswordResetEmail(auth, email);
+      await sendPasswordResetEmail(auth, email, {
+        url: `${window.location.origin}/__/auth/action`,
+      });
       setSuccess('Password reset email sent! Check your inbox.');
     } catch {
       setError('Failed to send reset email. Please check your email address.');
@@ -99,7 +101,7 @@ function LoginContent() {
       
       // Send verification email
       await sendEmailVerification(user, {
-        url: `${window.location.origin}/`,
+        url: `${window.location.origin}/__/auth/action`,
         handleCodeInApp: true,
       });
       

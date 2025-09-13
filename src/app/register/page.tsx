@@ -49,7 +49,7 @@ function RegisterContent() {
 
       // Send verification email
       await sendEmailVerification(user, {
-        url: `${window.location.origin}/`,
+        url: `${window.location.origin}/__/auth/action`,
         handleCodeInApp: true,
       });
 

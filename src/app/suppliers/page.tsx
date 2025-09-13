@@ -41,6 +41,7 @@ export default function SuppliersPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingSupplier, setEditingSupplier] = useState<Supplier | null>(null);
   const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     nameAr: '',
@@ -110,26 +111,31 @@ export default function SuppliersPage() {
     setFormData(prev => ({ ...prev, logoUrl: '' }));
   };
 
-  const handleSaveSupplier = () => {
-    if (editingSupplier) {
-      // Update existing supplier
-      setSuppliers(suppliers.map(s =>
-        s.id === editingSupplier.id
-          ? { ...s, ...formData, updatedAt: new Date() }
-          : s
-      ));
-    } else {
-      // Add new supplier
-      const newSupplier: Supplier = {
-        id: `s${Date.now()}`,
-        ...formData,
-        tenantId: 'default',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-      setSuppliers([...suppliers, newSupplier]);
+  const handleSaveSupplier = async () => {
+    setSaving(true);
+    try {
+      if (editingSupplier) {
+        // Update existing supplier
+        setSuppliers(suppliers.map(s =>
+          s.id === editingSupplier.id
+            ? { ...s, ...formData, updatedAt: new Date() }
+            : s
+        ));
+      } else {
+        // Add new supplier
+        const newSupplier: Supplier = {
+          id: `s${Date.now()}`,
+          ...formData,
+          tenantId: 'default',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+        setSuppliers([...suppliers, newSupplier]);
+      }
+      setIsDialogOpen(false);
+    } finally {
+      setSaving(false);
     }
-    setIsDialogOpen(false);
   };
 
   return (

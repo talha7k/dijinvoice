@@ -27,6 +27,7 @@ function InvoicesContent() {
   const [loading, setLoading] = useState(true);
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
 
   useEffect(() => {
     if (!tenantId) return;
@@ -89,8 +90,13 @@ function InvoicesContent() {
   const handleStatusChange = async (invoiceId: string, status: Invoice['status']) => {
     if (!tenantId) return;
 
-    const invoiceRef = doc(db, 'tenants', tenantId, 'invoices', invoiceId);
-    await updateDoc(invoiceRef, { status, updatedAt: new Date() });
+    setUpdatingStatus(invoiceId);
+    try {
+      const invoiceRef = doc(db, 'tenants', tenantId, 'invoices', invoiceId);
+      await updateDoc(invoiceRef, { status, updatedAt: new Date() });
+    } finally {
+      setUpdatingStatus(null);
+    }
   };
 
   const handleCreateInvoice = async (invoiceData: Omit<Invoice, 'id' | 'tenantId' | 'createdAt' | 'updatedAt'>) => {
@@ -605,6 +611,7 @@ function InvoicesContent() {
                         <Button
                           variant="outline"
                           size="sm"
+                          loading={updatingStatus === invoice.id}
                           onClick={() => handleStatusChange(invoice.id, 'sent')}
                         >
                           Mark as Sent
@@ -614,6 +621,7 @@ function InvoicesContent() {
                         <Button
                           variant="outline"
                           size="sm"
+                          loading={updatingStatus === invoice.id}
                           onClick={() => handleStatusChange(invoice.id, 'paid')}
                         >
                           Mark as Paid

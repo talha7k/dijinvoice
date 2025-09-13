@@ -56,6 +56,8 @@ export default function ReportsPage() {
     endDate: ''
   });
   const [reportType, setReportType] = useState('monthly');
+  const [exporting, setExporting] = useState(false);
+  const [exportingVAT, setExportingVAT] = useState(false);
 
   const fetchInvoices = useCallback(async () => {
     if (!tenantId) return;
@@ -163,68 +165,78 @@ export default function ReportsPage() {
     }));
   };
 
-  const handleExportReport = () => {
+  const handleExportReport = async () => {
     if (!reportData) return;
     
-    // Create CSV content
-    const csvContent = [
-      ['Report Type', reportType],
-      ['Date Range', `${dateRange.startDate} to ${dateRange.endDate}`],
-      [''],
-      ['Financial Metrics', 'Amount'],
-      ['Total Sales', reportData.totalSales.toFixed(2)],
-      ['Total Purchases', reportData.totalPurchases.toFixed(2)],
-      ['Gross Profit', reportData.grossProfit.toFixed(2)],
-      ['Net Profit', reportData.netProfit.toFixed(2)],
-      ['Profit Margin', `${reportData.profitMargin.toFixed(2)}%`],
-      [''],
-      ['VAT Information', 'Amount'],
-      ['VAT Collected', reportData.totalVATCollected.toFixed(2)],
-      ['VAT Paid', reportData.totalVATPaid.toFixed(2)],
-      ['Net VAT Payable', reportData.netVATPayable.toFixed(2)]
-    ].map(row => row.join(',')).join('\n');
-    
-    // Create download link
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('download', `financial-report-${dateRange.startDate}-to-${dateRange.endDate}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    setExporting(true);
+    try {
+      // Create CSV content
+      const csvContent = [
+        ['Report Type', reportType],
+        ['Date Range', `${dateRange.startDate} to ${dateRange.endDate}`],
+        [''],
+        ['Financial Metrics', 'Amount'],
+        ['Total Sales', reportData.totalSales.toFixed(2)],
+        ['Total Purchases', reportData.totalPurchases.toFixed(2)],
+        ['Gross Profit', reportData.grossProfit.toFixed(2)],
+        ['Net Profit', reportData.netProfit.toFixed(2)],
+        ['Profit Margin', `${reportData.profitMargin.toFixed(2)}%`],
+        [''],
+        ['VAT Information', 'Amount'],
+        ['VAT Collected', reportData.totalVATCollected.toFixed(2)],
+        ['VAT Paid', reportData.totalVATPaid.toFixed(2)],
+        ['Net VAT Payable', reportData.netVATPayable.toFixed(2)]
+      ].map(row => row.join(',')).join('\n');
+      
+      // Create download link
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `financial-report-${dateRange.startDate}-to-${dateRange.endDate}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } finally {
+      setExporting(false);
+    }
   };
 
-  const handleExportVATReport = () => {
+  const handleExportVATReport = async () => {
     if (!reportData) return;
     
-    // Create CSV content for VAT report
-    const csvContent = [
-      ['VAT Report', ''],
-      ['Report Type', reportType],
-      ['Date Range', `${dateRange.startDate} to ${dateRange.endDate}`],
-      [''],
-      ['VAT Details', 'Amount'],
-      ['VAT Collected on Sales', reportData.totalVATCollected.toFixed(2)],
-      ['VAT Paid on Purchases', reportData.totalVATPaid.toFixed(2)],
-      ['Net VAT Payable', reportData.netVATPayable.toFixed(2)],
-      [''],
-      ['Supporting Documents', ''],
-      ['Total Sales Invoices', invoices.filter(inv => inv.type === 'sales').length],
-      ['Total Purchase Invoices', invoices.filter(inv => inv.type === 'purchase').length]
-    ].map(row => row.join(',')).join('\n');
-    
-    // Create download link
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('download', `vat-report-${dateRange.startDate}-to-${dateRange.endDate}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    setExportingVAT(true);
+    try {
+      // Create CSV content for VAT report
+      const csvContent = [
+        ['VAT Report', ''],
+        ['Report Type', reportType],
+        ['Date Range', `${dateRange.startDate} to ${dateRange.endDate}`],
+        [''],
+        ['VAT Details', 'Amount'],
+        ['VAT Collected on Sales', reportData.totalVATCollected.toFixed(2)],
+        ['VAT Paid on Purchases', reportData.totalVATPaid.toFixed(2)],
+        ['Net VAT Payable', reportData.netVATPayable.toFixed(2)],
+        [''],
+        ['Supporting Documents', ''],
+        ['Total Sales Invoices', invoices.filter(inv => inv.type === 'sales').length],
+        ['Total Purchase Invoices', invoices.filter(inv => inv.type === 'purchase').length]
+      ].map(row => row.join(',')).join('\n');
+      
+      // Create download link
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `vat-report-${dateRange.startDate}-to-${dateRange.endDate}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } finally {
+      setExportingVAT(false);
+    }
   };
 
   if (loading) {
@@ -318,7 +330,7 @@ export default function ReportsPage() {
                   Financial performance for the selected period
                 </CardDescription>
               </div>
-              <Button onClick={handleExportReport} className="flex items-center gap-2">
+              <Button onClick={handleExportReport} loading={exporting} className="flex items-center gap-2">
                 <Download className="h-4 w-4" />
                 Export
               </Button>
@@ -427,7 +439,7 @@ export default function ReportsPage() {
                   VAT calculation and details for tax filing purposes
                 </CardDescription>
               </div>
-              <Button onClick={handleExportVATReport} className="flex items-center gap-2">
+              <Button onClick={handleExportVATReport} loading={exportingVAT} className="flex items-center gap-2">
                 <Download className="h-4 w-4" />
                 Export VAT Report
               </Button>
