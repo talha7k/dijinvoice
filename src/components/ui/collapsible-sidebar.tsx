@@ -20,6 +20,7 @@ import {
   LogOut,
   Menu,
   Moon,
+  PieChart,
   Receipt,
   Settings,
   Sun,
@@ -90,6 +91,11 @@ const navigationItems = [
         icon: Users,
       },
     ]
+  },
+  {
+    title: "Reports",
+    href: "/reports",
+    icon: PieChart,
   },
   {
     title: "Company",
