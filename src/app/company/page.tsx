@@ -67,23 +67,39 @@ function CompanyContent() {
     setUploadingLogo(true);
     
     try {
+      const maxSize = 2 * 1024 * 1024;
+      if (file.size > maxSize) {
+        throw new Error('File size exceeds 2MB limit');
+      }
+      
+      if (!file.type.startsWith('image/')) {
+        throw new Error('Only image files are allowed');
+      }
+      
+      console.log('Starting logo upload...');
       const storageRef = ref(storage, `tenants/${tenantId}/logo`);
-      await uploadBytes(storageRef, file);
-      const downloadUrl = await getDownloadURL(storageRef);
+      console.log('Storage ref:', storageRef);
+      console.log('File:', file.name, file.size, file.type);
+      
+      const uploadResult = await uploadBytes(storageRef, file);
+      console.log('Upload result:', uploadResult);
+      
+      const downloadUrl = await getDownloadURL(uploadResult.ref);
+      console.log('Download URL:', downloadUrl);
       
       setLogoUrl(downloadUrl);
       
-      // Update tenant document
       await updateDoc(doc(db, 'tenants', tenantId), {
         logoUrl: downloadUrl,
         updatedAt: new Date(),
       });
       
-      // Update local state
       setTenant(prev => prev ? { ...prev, logoUrl: downloadUrl } : null);
     } catch (error) {
       console.error('Error uploading logo:', error);
-      alert('Failed to upload logo.');
+      console.error('Error details:', JSON.stringify(error, null, 2));
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      alert(`Failed to upload logo: ${errorMessage}`);
     } finally {
       setUploadingLogo(false);
     }
@@ -96,23 +112,31 @@ function CompanyContent() {
     setUploadingStamp(true);
     
     try {
+      const maxSize = 2 * 1024 * 1024;
+      if (file.size > maxSize) {
+        throw new Error('File size exceeds 2MB limit');
+      }
+      
+      if (!file.type.startsWith('image/')) {
+        throw new Error('Only image files are allowed');
+      }
+      
       const storageRef = ref(storage, `tenants/${tenantId}/stamp`);
-      await uploadBytes(storageRef, file);
-      const downloadUrl = await getDownloadURL(storageRef);
+      const uploadResult = await uploadBytes(storageRef, file);
+      const downloadUrl = await getDownloadURL(uploadResult.ref);
       
       setStampUrl(downloadUrl);
       
-      // Update tenant document
       await updateDoc(doc(db, 'tenants', tenantId), {
         stampUrl: downloadUrl,
         updatedAt: new Date(),
       });
       
-      // Update local state
       setTenant(prev => prev ? { ...prev, stampUrl: downloadUrl } : null);
     } catch (error) {
       console.error('Error uploading stamp:', error);
-      alert('Failed to upload stamp.');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      alert(`Failed to upload stamp: ${errorMessage}`);
     } finally {
       setUploadingStamp(false);
     }
