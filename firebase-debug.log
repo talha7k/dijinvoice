@@ -1,0 +1,68 @@
+[debug] [2025-12-28T19:56:50.555Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-12-28T19:56:50.556Z] > authorizing via signed-in user (dijitize.com@gmail.com)
+[debug] [2025-12-28T19:56:50.556Z] Checked if tokens are valid: true, expires at: 1766954519547
+[debug] [2025-12-28T19:56:50.556Z] Checked if tokens are valid: true, expires at: 1766954519547
+[debug] [2025-12-28T19:56:50.556Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-12-28T19:56:50.556Z] > authorizing via signed-in user (dijitize.com@gmail.com)
+[debug] [2025-12-28T19:56:50.557Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/dijipos-27e3a/billingInfo [none]
+[debug] [2025-12-28T19:56:50.557Z] Checked if tokens are valid: true, expires at: 1766954519547
+[debug] [2025-12-28T19:56:50.557Z] Checked if tokens are valid: true, expires at: 1766954519547
+[debug] [2025-12-28T19:56:50.557Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/dijipos-27e3a/billingInfo [none]
+[debug] [2025-12-28T19:56:51.033Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/dijipos-27e3a/billingInfo 200
+[debug] [2025-12-28T19:56:51.033Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/dijipos-27e3a/billingInfo {"name":"projects/dijipos-27e3a/billingInfo","projectId":"dijipos-27e3a","billingAccountName":"billingAccounts/013E16-FA08D5-C05604","billingEnabled":true}
+[debug] [2025-12-28T19:56:51.039Z] Checked if tokens are valid: true, expires at: 1766954519547
+[debug] [2025-12-28T19:56:51.039Z] Checked if tokens are valid: true, expires at: 1766954519547
+[debug] [2025-12-28T19:56:51.048Z] Checked if tokens are valid: true, expires at: 1766954519547
+[debug] [2025-12-28T19:56:51.048Z] Checked if tokens are valid: true, expires at: 1766954519547
+[debug] [2025-12-28T19:56:51.049Z] Checked if tokens are valid: true, expires at: 1766954519547
+[debug] [2025-12-28T19:56:51.049Z] Checked if tokens are valid: true, expires at: 1766954519547
+[debug] [2025-12-28T19:56:51.049Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/dijipos-27e3a/services/firebasedataconnect.googleapis.com [none]
+[debug] [2025-12-28T19:56:51.049Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/dijipos-27e3a/services/firebasedataconnect.googleapis.com x-goog-quota-user=projects/dijipos-27e3a
+[debug] [2025-12-28T19:56:51.050Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/dijipos-27e3a/services/firebaseapphosting.googleapis.com [none]
+[debug] [2025-12-28T19:56:51.050Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/dijipos-27e3a/services/firebaseapphosting.googleapis.com x-goog-quota-user=projects/dijipos-27e3a
+[debug] [2025-12-28T19:56:51.050Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/dijipos-27e3a/services/firebaseio.com [none]
+[debug] [2025-12-28T19:56:51.051Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/dijipos-27e3a/services/firebaseio.com x-goog-quota-user=projects/dijipos-27e3a
+[debug] [2025-12-28T19:56:51.087Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/dijipos-27e3a/billingInfo 200
+[debug] [2025-12-28T19:56:51.087Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/dijipos-27e3a/billingInfo {"name":"projects/dijipos-27e3a/billingInfo","projectId":"dijipos-27e3a","billingAccountName":"billingAccounts/013E16-FA08D5-C05604","billingEnabled":true}
+[debug] [2025-12-28T19:56:51.087Z] Checked if tokens are valid: true, expires at: 1766954519547
+[debug] [2025-12-28T19:56:51.088Z] Checked if tokens are valid: true, expires at: 1766954519547
+[debug] [2025-12-28T19:56:51.089Z] Checked if tokens are valid: true, expires at: 1766954519547
+[debug] [2025-12-28T19:56:51.089Z] Checked if tokens are valid: true, expires at: 1766954519547
+[debug] [2025-12-28T19:56:51.089Z] Checked if tokens are valid: true, expires at: 1766954519547
+[debug] [2025-12-28T19:56:51.089Z] Checked if tokens are valid: true, expires at: 1766954519547
+[debug] [2025-12-28T19:56:51.089Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/dijipos-27e3a/services/firebasedataconnect.googleapis.com [none]
+[debug] [2025-12-28T19:56:51.089Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/dijipos-27e3a/services/firebasedataconnect.googleapis.com x-goog-quota-user=projects/dijipos-27e3a
+[debug] [2025-12-28T19:56:51.090Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/dijipos-27e3a/services/firebaseapphosting.googleapis.com [none]
+[debug] [2025-12-28T19:56:51.090Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/dijipos-27e3a/services/firebaseapphosting.googleapis.com x-goog-quota-user=projects/dijipos-27e3a
+[debug] [2025-12-28T19:56:51.090Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/dijipos-27e3a/services/firebaseio.com [none]
+[debug] [2025-12-28T19:56:51.090Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/dijipos-27e3a/services/firebaseio.com x-goog-quota-user=projects/dijipos-27e3a
+[debug] [2025-12-28T19:56:52.108Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/dijipos-27e3a/services/firebaseio.com 403
+[debug] [2025-12-28T19:56:52.108Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/dijipos-27e3a/services/firebaseio.com [omitted]
+[debug] [2025-12-28T19:56:52.220Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/dijipos-27e3a/services/firebaseapphosting.googleapis.com 200
+[debug] [2025-12-28T19:56:52.220Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/dijipos-27e3a/services/firebaseapphosting.googleapis.com [omitted]
+[debug] [2025-12-28T19:56:52.243Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/dijipos-27e3a/services/firebasedataconnect.googleapis.com 200
+[debug] [2025-12-28T19:56:52.243Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/dijipos-27e3a/services/firebasedataconnect.googleapis.com [omitted]
+[debug] [2025-12-28T19:56:52.350Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-12-28T19:56:52.350Z] > authorizing via signed-in user (dijitize.com@gmail.com)
+[debug] [2025-12-28T19:56:52.350Z] Checked if tokens are valid: true, expires at: 1766954519547
+[debug] [2025-12-28T19:56:52.350Z] Checked if tokens are valid: true, expires at: 1766954519547
+[debug] [2025-12-28T19:56:52.351Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/dijipos-27e3a/billingInfo [none]
+[debug] [2025-12-28T19:56:52.751Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/dijipos-27e3a/services/firebaseio.com 403
+[debug] [2025-12-28T19:56:52.751Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/dijipos-27e3a/services/firebaseio.com [omitted]
+[debug] [2025-12-28T19:56:53.172Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/dijipos-27e3a/billingInfo 200
+[debug] [2025-12-28T19:56:53.173Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/dijipos-27e3a/billingInfo {"name":"projects/dijipos-27e3a/billingInfo","projectId":"dijipos-27e3a","billingAccountName":"billingAccounts/013E16-FA08D5-C05604","billingEnabled":true}
+[debug] [2025-12-28T19:56:53.174Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-12-28T19:56:53.174Z] > authorizing via signed-in user (dijitize.com@gmail.com)
+[debug] [2025-12-28T19:56:53.212Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/dijipos-27e3a/services/firebaseapphosting.googleapis.com 200
+[debug] [2025-12-28T19:56:53.212Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/dijipos-27e3a/services/firebaseapphosting.googleapis.com [omitted]
+[debug] [2025-12-28T19:56:53.218Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/dijipos-27e3a/services/firebasedataconnect.googleapis.com 200
+[debug] [2025-12-28T19:56:53.218Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/dijipos-27e3a/services/firebasedataconnect.googleapis.com [omitted]
+[debug] [2025-12-28T19:56:53.284Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-12-28T19:56:53.284Z] > authorizing via signed-in user (dijitize.com@gmail.com)
+[debug] [2025-12-28T19:56:53.284Z] Checked if tokens are valid: true, expires at: 1766954519547
+[debug] [2025-12-28T19:56:53.284Z] Checked if tokens are valid: true, expires at: 1766954519547
+[debug] [2025-12-28T19:56:53.284Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/dijipos-27e3a/billingInfo [none]
+[debug] [2025-12-28T19:56:54.297Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/dijipos-27e3a/billingInfo 200
+[debug] [2025-12-28T19:56:54.297Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/dijipos-27e3a/billingInfo {"name":"projects/dijipos-27e3a/billingInfo","projectId":"dijipos-27e3a","billingAccountName":"billingAccounts/013E16-FA08D5-C05604","billingEnabled":true}
+[debug] [2025-12-28T19:56:54.299Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-12-28T19:56:54.300Z] > authorizing via signed-in user (dijitize.com@gmail.com)
